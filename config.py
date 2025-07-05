@@ -177,6 +177,7 @@ config = {
     'version': version,
     'onetime_tasks': [  # tasks to execute
         ["src.task.DailyTask2", "DailyTask2"],
+        ["src.task.ForgeryTask", "ForgeryTask"],
         ["src.task.SimulationTask", "SimulationTask"],
         ["src.task.TacetTask2", "TacetTask2"],
         ["src.task.DailyTask", "DailyTask"],
