@@ -4,6 +4,8 @@
 
 在保留 [原版 ok-ww](https://github.com/ok-oldking/ok-wuthering-waves) 全部功能的基础上，**添加新版日常一条龙任务，增加任务鲁棒性和日志可读性，方便无人值守运行和调试。**
 
+代码变更：https://github.com/zzc-tongji/ok-ww-enhanced/compare/master..main?diff=split 。
+
 ### 新功能
 
 所有新增功能用⭐标出。
