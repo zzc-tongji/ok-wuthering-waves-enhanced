@@ -34,10 +34,11 @@
 - 日志文件 `./logs/ok-script.log` 优化：
   - 如果某些任务无法完成，会包含文本 `未完成`，以便后续处理（例如发送通知）。
   - 在出现异常的情况下，会包含文本 `一条龙错误` 和错误堆栈，以便后续处理。
-- 相比原版的改动：
+- 新版 [DailyTask2.py](./src/task/DailyTask2.py) 相比原版 [DailyTask.py](./src/task/Dailytask.py) 的改动：
   - 体力任务支持设置传送超时：新版有，原版无。
   - 在出现异常的情况下：新版可以设置是否退出程序，原版不会退出程序。
   - 热更新时自动重启：新版本多判断一次 `wait_login`，原版直接返回 `False`。
+  - 代码变更报告：[DailyTask.diff.html](https://htmlpreview.github.io/?https://raw.githubusercontent.com/zzc-tongji/ok-ww-enhanced/refs/heads/main/readme/DailyTask.diff.html) 。
 
 ### 运行方法
 
