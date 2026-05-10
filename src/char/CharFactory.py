@@ -103,6 +103,8 @@ char_dict = {
     Labels.char_linnai: {'cls': Linnai, 'res_cd': 15, 'echo_cd': 25, 'liberation_cd': 25,
                          'ring_index': Elements.SPECTRO},
     Labels.char_moning: {'cls': Mornye, 'res_cd': 15, 'echo_cd': 25, 'liberation_cd': 25, 'ring_index': Elements.FIRE},
+    Labels.char_moning_new: {'cls': Mornye, 'res_cd': 15, 'echo_cd': 25, 'liberation_cd': 25,
+                             'ring_index': Elements.FIRE},
     Labels.char_aemeath: {'cls': Aemeath, 'res_cd': 4, 'echo_cd': 25, 'liberation_cd': 25, 'ring_index': Elements.FIRE},
     Labels.char_xigelika: {'cls': Xigelika, 'res_cd': 4, 'echo_cd': 25, 'liberation_cd': 25,
                            'ring_index': Elements.WIND},

@@ -87,6 +87,7 @@ class Labels(str, Enum):
     char_luhesi = 'char_luhesi'
     char_lupa = 'char_lupa'
     char_moning = 'char_moning'
+    char_moning_new = 'char_moning_new'
     char_mortefi = 'char_mortefi'
     char_phoebe = 'char_phoebe'
     char_phrolova = 'char_phrolova'
