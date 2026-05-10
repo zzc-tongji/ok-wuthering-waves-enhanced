@@ -138,15 +138,32 @@ class MultiAccountDailyTask(WWOneTimeTask, BaseCombatTask):
             return True
         return False
 
+    def _is_account_displayed(self, suffix):
+        """Check if the given account suffix is shown in the account selector area."""
+        texts = self.ocr()
+        pattern = self._make_masked_pattern(suffix)
+        boxes = self.find_boxes(texts, boundary=self.box_of_screen(0.3, 0.3, 0.7, 0.7), match=pattern)
+        return bool(boxes)
+
     def _select_and_login_account(self, suffix):
         pattern = self._make_masked_pattern(suffix)
         self.log_info(f'正在选择账号：****{suffix}')
-        self._click_center_offset(270, -43, after_sleep=5)
-        self.wait_until(
-            lambda: self._click_account_in_list(pattern),
-            time_out=10, raise_if_not_found=True
-        )
-        self.sleep(5)
+        max_retries = 3
+        for attempt in range(1, max_retries + 1):
+            self._click_center_offset(270, -43, after_sleep=5)
+            self.wait_until(
+                lambda: self._click_account_in_list(pattern),
+                time_out=10, raise_if_not_found=True
+            )
+            self.sleep(1)
+            if self._is_account_displayed(suffix):
+                self.log_info(f'已确认选中账号：****{suffix}')
+                break
+            if attempt < max_retries:
+                self.log_info(f'账号显示不匹配，重试（{attempt}/{max_retries}）')
+            else:
+                self.log_error(f'账号选择失败，已重试 {max_retries} 次仍未显示 ****{suffix}，继续尝试登录')
+        self.sleep(4)
         texts = self.ocr()
         login_btn = self.find_boxes(texts, boundary=self.box_of_screen(0.3, 0.3, 0.7, 0.8), match="登录")
         if login_btn:

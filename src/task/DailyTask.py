@@ -150,7 +150,10 @@ class DailyTask(WWOneTimeTask, BaseCombatTask):
     def get_total_daily_points(self):
         points_boxes = self.ocr(0.19, 0.8, 0.30, 0.93, match=number_re)
         if points_boxes:
-            points = int(points_boxes[0].name)
+            try:
+                points = int(re.sub(r'\D', '', points_boxes[0].name))
+            except Exception:
+                points = 0
         else:
             points = 0
         self.info_set('total daily points', points)

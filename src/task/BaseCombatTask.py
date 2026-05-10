@@ -256,6 +256,7 @@ class BaseCombatTask(CombatCheck):
         except NotInCombatException as e:
             logger.info(f'combat_once out of combat break {e}')
         self.combat_end()
+        self.switch_healer()
         self.wait_in_team_and_world(time_out=10, raise_if_not_found=False)
 
     def run_in_circle_to_find_echo(self, circle_count=3):
@@ -394,7 +395,7 @@ class BaseCombatTask(CombatCheck):
         logger.info(f'switch_next_char end {(current_char.last_switch_time - start):.3f}s')
 
     def find_mouse_forte(self):
-        return self.find_one('mouse_forte', horizontal_variance=0.025, vertical_variance=0.015, threshold=0.7,
+        return self.find_one('mouse_forte', horizontal_variance=0.025, vertical_variance=0.015, threshold=0.6,
                              frame_processor=binarize_for_matching)
 
     def find_e_forte(self):
@@ -466,6 +467,12 @@ class BaseCombatTask(CombatCheck):
         current_char = self.get_current_char(raise_exception=False)
         if current_char:
             self.get_current_char().on_combat_end(self.chars)
+
+    def switch_healer(self):
+        if self.config.get('Switch to Healer after Combat'):
+            current_char = self.get_current_char()
+            if current_char and not isinstance(current_char, Healer):
+                current_char.switch_other_char()
 
     def sleep_check(self):
         """休眠指定时间, 并在休眠前后检查战斗状态。

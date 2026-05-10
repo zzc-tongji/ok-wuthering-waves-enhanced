@@ -44,22 +44,18 @@ from src.char.Yuanwu import Yuanwu
 from src.char.Zani import Zani
 from src.char.Zhezhi import Zhezhi
 
-char_dict = {
+_char_dict_raw = {
     Labels.char_yinlin: {'cls': Yinlin, 'res_cd': 12, 'echo_cd': 25, 'ring_index': Elements.ELECTRIC},
     Labels.char_verina: {'cls': Verina, 'res_cd': 12, 'echo_cd': 25, 'ring_index': Elements.SPECTRO},
     Labels.char_shorekeeper: {'cls': ShoreKeeper, 'res_cd': 15, 'echo_cd': 25, 'ring_index': Elements.SPECTRO},
     Labels.char_taoqi: {'cls': Taoqi, 'res_cd': 15, 'echo_cd': 25, 'ring_index': Elements.HAVOC},
-    Labels.char_rover: {'cls': HavocRover, 'res_cd': 12, 'echo_cd': 25},
-    Labels.char_rover_male: {'cls': HavocRover, 'res_cd': 12, 'echo_cd': 25},
+    (Labels.char_rover, Labels.char_rover_male): {'cls': HavocRover, 'res_cd': 12, 'echo_cd': 25},
     Labels.char_encore: {'cls': Encore, 'res_cd': 10, 'echo_cd': 25, 'ring_index': Elements.FIRE},
     Labels.char_jianxin: {'cls': Jianxin, 'res_cd': 12, 'echo_cd': 25, 'ring_index': Elements.WIND},
-    Labels.char_sanhua: {'cls': Sanhua, 'res_cd': 10, 'echo_cd': 25, 'ring_index': Elements.ICE},
-    Labels.char_sanhua2: {'cls': Sanhua, 'res_cd': 10, 'echo_cd': 25, 'ring_index': Elements.ICE},
-    Labels.char_jinhsi: {'cls': Jinhsi, 'res_cd': 3, 'echo_cd': 25, 'ring_index': Elements.SPECTRO},
-    Labels.char_jinhsi2: {'cls': Jinhsi, 'res_cd': 3, 'echo_cd': 25, 'ring_index': Elements.SPECTRO},
+    (Labels.char_sanhua, Labels.char_sanhua2): {'cls': Sanhua, 'res_cd': 10, 'echo_cd': 25, 'ring_index': Elements.ICE},
+    (Labels.char_jinhsi, Labels.char_jinhsi2): {'cls': Jinhsi, 'res_cd': 3, 'echo_cd': 25, 'ring_index': Elements.SPECTRO},
     Labels.char_yuanwu: {'cls': Yuanwu, 'res_cd': 3, 'echo_cd': 25, 'ring_index': Elements.ELECTRIC},
-    Labels.chang_changli: {'cls': Changli, 'res_cd': 12, 'echo_cd': 25, 'ring_index': Elements.FIRE},
-    Labels.char_changli2: {'cls': Changli, 'res_cd': 12, 'echo_cd': 25, 'ring_index': Elements.FIRE},
+    (Labels.chang_changli, Labels.char_changli2): {'cls': Changli, 'res_cd': 12, 'echo_cd': 25, 'ring_index': Elements.FIRE},
     Labels.char_chixia: {'cls': Chixia, 'res_cd': 9, 'echo_cd': 25, 'ring_index': Elements.FIRE},
     Labels.char_danjin: {'cls': Danjin, 'res_cd': 9999999, 'echo_cd': 25, 'ring_index': Elements.HAVOC},
     Labels.char_baizhi: {'cls': Baizhi, 'res_cd': 16, 'echo_cd': 25, 'ring_index': Elements.ICE},
@@ -70,16 +66,14 @@ char_dict = {
     Labels.char_xiangliyao: {'cls': Xiangliyao, 'res_cd': 5, 'echo_cd': 25, 'ring_index': Elements.ELECTRIC},
     Labels.char_camellya: {'cls': Camellya, 'res_cd': 4, 'echo_cd': 25, 'ring_index': Elements.HAVOC},
     Labels.char_youhu: {'cls': Youhu, 'res_cd': 4, 'echo_cd': 25, 'ring_index': Elements.ICE},
-    Labels.char_carlotta: {'cls': Carlotta, 'res_cd': 10, 'echo_cd': 25, 'ring_index': Elements.ICE},
-    Labels.char_carlotta2: {'cls': Carlotta, 'res_cd': 10, 'echo_cd': 25, 'ring_index': Elements.ICE},
+    (Labels.char_carlotta, Labels.char_carlotta2): {'cls': Carlotta, 'res_cd': 10, 'echo_cd': 25, 'ring_index': Elements.ICE},
     Labels.char_roccia: {'cls': Roccia, 'res_cd': 10, 'echo_cd': 25, 'liberation_cd': 20, 'ring_index': Elements.HAVOC},
     Labels.char_phoebe: {'cls': Phoebe, 'res_cd': 12, 'echo_cd': 25, 'liberation_cd': 25,
                          'ring_index': Elements.SPECTRO},
     Labels.char_brant: {'cls': Brant, 'res_cd': 4, 'echo_cd': 25, 'liberation_cd': 24, 'ring_index': Elements.FIRE},
     Labels.char_cantarella: {'cls': Cantarella, 'res_cd': 10, 'echo_cd': 25, 'liberation_cd': 25,
                              'ring_index': Elements.HAVOC},
-    Labels.char_zani: {'cls': Zani, 'res_cd': 5, 'echo_cd': 25, 'ring_index': Elements.SPECTRO},
-    Labels.char_zani2: {'cls': Zani, 'res_cd': 5, 'echo_cd': 25, 'ring_index': Elements.SPECTRO},
+    (Labels.char_zani, Labels.char_zani2): {'cls': Zani, 'res_cd': 5, 'echo_cd': 25, 'ring_index': Elements.SPECTRO},
     Labels.char_ciaccona: {'cls': Ciaccona, 'res_cd': 10, 'echo_cd': 25, 'liberation_cd': 20,
                            'ring_index': Elements.WIND},
     Labels.char_cartethyia: {'cls': Cartethyia, 'res_cd': 14, 'echo_cd': 25, 'liberation_cd': 20,
@@ -102,8 +96,7 @@ char_dict = {
                           'ring_index': Elements.ELECTRIC},
     Labels.char_linnai: {'cls': Linnai, 'res_cd': 15, 'echo_cd': 25, 'liberation_cd': 25,
                          'ring_index': Elements.SPECTRO},
-    Labels.char_moning: {'cls': Mornye, 'res_cd': 15, 'echo_cd': 25, 'liberation_cd': 25, 'ring_index': Elements.FIRE},
-    Labels.char_moning_new: {'cls': Mornye, 'res_cd': 15, 'echo_cd': 25, 'liberation_cd': 25,
+    (Labels.char_moning, Labels.char_moning_new): {'cls': Mornye, 'res_cd': 15, 'echo_cd': 25, 'liberation_cd': 25,
                              'ring_index': Elements.FIRE},
     Labels.char_aemeath: {'cls': Aemeath, 'res_cd': 4, 'echo_cd': 25, 'liberation_cd': 25, 'ring_index': Elements.FIRE},
     Labels.char_xigelika: {'cls': Xigelika, 'res_cd': 4, 'echo_cd': 25, 'liberation_cd': 25,
@@ -113,6 +106,14 @@ char_dict = {
     Labels.char_hiyuki: {'cls': Hiyuki, 'res_cd': 12, 'echo_cd': 25, 'liberation_cd': 25,
                          'ring_index': Elements.ICE},
 }
+
+char_dict = {}
+for keys, value in _char_dict_raw.items():
+    if isinstance(keys, tuple):
+        for key in keys:
+            char_dict[key] = value
+    else:
+        char_dict[keys] = value
 
 char_names = char_dict.keys()
 

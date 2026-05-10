@@ -1243,15 +1243,6 @@
         {
             "license": 0,
             "url": null,
-            "file_name": "images/1.png",
-            "height": 2160,
-            "width": 3840,
-            "date_captured": null,
-            "id": 18
-        },
-        {
-            "license": 0,
-            "url": null,
             "file_name": "images/0.png",
             "height": 2160,
             "width": 3840,
@@ -2059,7 +2050,7 @@
         {
             "license": 0,
             "url": null,
-            "file_name": "images/2.png",
+            "file_name": "images/1.png",
             "height": 2160,
             "width": 3840,
             "date_captured": null,
@@ -2178,6 +2169,12 @@
         },
         {
             "id": 238,
+            "file_name": "images/34.png",
+            "width": 1920,
+            "height": 1080
+        },
+        {
+            "id": 239,
             "file_name": "images/34.png",
             "width": 1920,
             "height": 1080
@@ -2548,15 +2545,15 @@
         },
         {
             "id": 26,
-            "image_id": 18,
+            "image_id": 239,
             "category_id": 120,
             "bbox": [
-                2807,
-                1236,
-                112,
-                220
+                1390,
+                639,
+                57,
+                77
             ],
-            "area": 24640,
+            "area": 4389,
             "iscrowd": 0
         },
         {

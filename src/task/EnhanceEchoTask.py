@@ -34,7 +34,8 @@ class EnhanceEchoTask(BaseWWTask, FindFeature):
             '首条双爆>=': 6.9,
             '有效词条>=': 3,
             '第一条必须为有效词条': True,
-            '有效词条': ['暴击', '暴击伤害', '攻击百分比']
+            '有效词条': ['暴击', '暴击伤害', '攻击百分比'],
+            'Pause after Success': True,
         })
         self.config_type["有效词条"] = {'type': "multi_selection",
                                         'options': ['暴击伤害', '暴击', '攻击百分比', '生命百分比', '防御百分比',
@@ -50,6 +51,7 @@ class EnhanceEchoTask(BaseWWTask, FindFeature):
             '有效词条>=': '声骸满级时需达到的有效词条数量，若剩余孔位无法凑齐该数量，则停止强化并丢弃',
             '第一条必须为有效词条': '如果开启，第一个副词条必须在有效词条列表中且符合数值要求，否则直接丢弃',
             '有效词条': '定义哪些属性被视为有效',
+            'Pause after Success': 'When a success occurs, send notification and pause task',
         }
 
     def find_echo_enhance(self):
@@ -324,6 +326,9 @@ class EnhanceEchoTask(BaseWWTask, FindFeature):
             raise Exception('上锁失败!')
         self.screenshot_echo(f'success/{self.info_get("成功声骸数量")}')
         self.log_info('成功并上锁')
+        if self.config.get('Pause after Success'):
+            self.log_info('符合条件的声骸，已暂停任务', notify=True)
+            self.pause()
         self.esc()
         self.wait_ocr(0.82, 0.86, 0.97, 0.96, match='培养', settle_time=0.1)
 
