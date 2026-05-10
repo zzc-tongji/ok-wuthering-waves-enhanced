@@ -31,16 +31,11 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 'lts/*'
+          cache: 'npm'
       - name: Install Diff2html
         if: env.FILES_IDENTICAL == 'false'
         run: |
           sudo npm install -g diff2html-cli@5.2.15
-      - name: Cache npm global packages
-        if: env.FILES_IDENTICAL == 'false'
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: npm-global-diff2html-cli-5.2.15
       - name: Generate Diff HTML
         if: env.FILES_IDENTICAL == 'false'
         run: |
