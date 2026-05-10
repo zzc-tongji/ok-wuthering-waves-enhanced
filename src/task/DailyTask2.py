@@ -252,26 +252,8 @@ class DailyTask2(TacetTask2, ForgeryTask2, SimulationTask2):
         self.ensure_main(time_out=10)
 
     def click_daily_reward_box(self, reward_points):
-        reward_boxes = self.ocr(
-            0.72, 0.78, 0.98, 0.98,
-            match=re.compile(rf'^{reward_points}$')
-        )
-        if reward_boxes:
-            reward_box = max(reward_boxes, key=lambda box: box.x)
-            click_box = reward_box.copy(
-                x_offset=int(-reward_box.width * 0.8),
-                y_offset=int(-reward_box.height * 3.0),
-                width_offset=int(reward_box.width * 1.6),
-                height_offset=int(reward_box.height * 2.2),
-                name=f'daily_reward_{reward_points}'
-            )
-            self.log_info(f'claim daily reward {reward_points} via OCR {reward_box}')
-            self.click(click_box, after_sleep=1)
-            return True
-
-        # Fall back to a more right-shifted point than the previous fixed coordinate.
         self.log_info(f'claim daily reward {reward_points} via fallback coordinate')
-        self.click(0.90, 0.85, after_sleep=1)
+        self.click(0.93, 0.88, after_sleep=1)
         return False
 
     def claim_mail(self):
