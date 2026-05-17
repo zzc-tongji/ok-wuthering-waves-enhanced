@@ -25,7 +25,7 @@ class Roccia(BaseChar):
             self.plunge()
             return self.switch_next_char()
         self.click_echo()
-        self.switch_next_char()
+        return self.switch_next_char()
 
     def switch_next_char(self, post_action=None, free_intro=False, target_low_con=False):
         super().switch_next_char(post_action=self.update_tool_box, free_intro=free_intro,
@@ -35,53 +35,18 @@ class Roccia(BaseChar):
         if has_intro:
             next_char.has_tool_box = True
 
-    def do_get_switch_priority(self, current_char: BaseChar, has_intro=False, target_low_con=False):
-        return Priority.MAX - 1
-
-    def get_plunge_count(self):
-        if not self.is_mouse_forte_full():
-            return 0
-        if self.flying():
-            return 1
-        else:
-            return 0
-
-    def is_color_ok(self, box):
-        purple_percent = self.task.calculate_color_percentage(forte_purple_color, self.task.get_box_by_name(box))
-        # self.logger.debug(f'purple percent: {box} {purple_percent}')
-        if purple_percent > 0.1:
-            return True
-
     def plunge(self):
         if self.need_fast_perform():
             self.normal_attack_until_can_switch()
             return
         start = time.time()
-        starting_count = 0
         self.task.send_key_down('w')
-        while (self.is_mouse_forte_full() and time.time() - start < 1.1) or (
-                starting_count > 0 and time.time() - start < 4):
+        while self.is_mouse_forte_full() and time.time() - start < 6:
+            if time.time() - start > 2 and not self.has_cd('resonance') and not self.has_cd('liberation'):
+                if self.click_liberation():
+                    self.click_resonance()
+                    start = time.time()
+                    continue
             self.click(interval=0.1)
-            if starting_count == 0:
-                starting_count = self.get_plunge_count()
-                # if starting_count > 0:
-                #     self.task.screenshot(f"can_plunge_{starting_count}")
-            if starting_count > 0 and not self.is_mouse_forte_full():
-                break
         self.task.send_key_up('w')
-        self.plunge_count = 0
         return True
-
-    def c6_continues_plunge(self):
-        start = time.time()
-        # has_charge = self.is_mouse_forte_full()
-        while time.time() - start < 11:
-            self.click(interval=0.1)
-        return True
-
-
-forte_purple_color = {
-    'r': (70, 105),  # Red range
-    'g': (30, 65),  # Green range
-    'b': (160, 235)  # Blue range
-}

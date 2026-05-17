@@ -8,7 +8,6 @@ import numpy as np
 from ok import Logger, Config
 from ok import color_range_to_bound
 from ok import safe_get
-from ok.feature.Box import get_bounding_box
 from src import text_white_color
 from src.char import BaseChar
 from src.char.BaseChar import Priority, dot_color  # noqa
@@ -28,6 +27,11 @@ class NotInCombatException(Exception):
 
 class CharDeadException(NotInCombatException):
     """角色死亡异常。"""
+    pass
+
+
+class CharRevivedException(CharDeadException):
+    """角色已复活，用于中断当前战斗上下文并让任务重新进入。"""
     pass
 
 
@@ -169,19 +173,31 @@ class BaseCombatTask(CombatCheck):
             return 0
 
     def revive_action(self):
-        pass
+        """角色死亡恢复：关闭弹窗 → 传周本入口 → 传最近传送点回血。"""
+        try:
+            self.send_key('esc', after_sleep=2)  # ① 关闭复活弹窗
+            self.revive_at_tower_and_heal()
+            logger.info(f'revive_action success')
+            return True
+        except Exception as e:
+            logger.error(f'revive_action failed', e)
+            return False
 
-    def teleport_to_heal(self, esc=True):
+    def revive_at_tower_and_heal(self):
+        """Use the weekly entrance as a stable anchor, then teleport to heal."""
+        self.go_to_tower()
+        self.teleport_to_heal()
+
+    def teleport_to_heal(self):
         """传送回城治疗。"""
-        if esc:
-            self.sleep(1)
-            self.info['Death Count'] = self.info.get('Death Count', 0) + 1
-            self.send_key('esc', after_sleep=2)
+        self.ensure_main(time_out=10)
         self.log_info('click m to open the map')
-        self.send_key('m', after_sleep=2)
-
+        start = time.time()
+        while self.in_team_and_world() and time.time() - start < 20:
+            self.send_key('m', after_sleep=2)
+        self.sleep(2)
         teleport = self.find_best_match_in_box(self.box_of_screen(0.1, 0.1, 0.9, 0.9),
-                                               ['map_way_point', 'map_way_point_big'], 0.7)
+                                               ['map_way_point', 'map_way_point_big'], 0.6)
         if not teleport:
             raise RuntimeError(f'Can not find a teleport to heal')
         self.click(teleport, after_sleep=1)
@@ -197,15 +213,27 @@ class BaseCombatTask(CombatCheck):
         self.wait_in_team_and_world(time_out=20)
         self.sleep(2)
 
-    def raise_not_in_combat(self, message, exception_type=None):
+    def raise_not_in_combat(self, message):
         """抛出未在战斗状态的异常。
 
         Args:
             message (str): 异常信息。
             exception_type (Exception, optional): 要抛出的异常类型。默认为 NotInCombatException。
         """
+        exception_type = None
         logger.error(message)
-        if self.reset_to_false(reason=message):
+        if self.wait_feature('revive_confirm_hcenter_vcenter', threshold=0.8, time_out=2):
+            self.log_info('raise_not_in_combat char dead')
+            if self.reset_to_false(reason=message):
+                logger.error(f'reset to false failed: {message}')
+            from src.task.AutoCombatTask import AutoCombatTask
+            if not isinstance(self, AutoCombatTask) and self.revive_action():
+                exception_type = CharRevivedException
+                self.info_set('Revive', 'Success')
+            else:
+                exception_type = CharDeadException
+                self.info_set('Revive', 'Failed')
+        elif self.reset_to_false(reason=message):
             logger.error(f'reset to false failed: {message}')
         if exception_type is None:
             exception_type = NotInCombatException
@@ -363,11 +391,7 @@ class BaseCombatTask(CombatCheck):
                 logger.info(f'not in team while switching chars_{current_char}_to_{switch_to} {now - start}')
                 # if self.debug:
                 #     self.screenshot(f'not in team while switching chars_{current_char}_to_{switch_to} {now - start}')
-                confirm = self.wait_feature('revive_confirm_hcenter_vcenter', threshold=0.8, time_out=2)
-                if confirm:
-                    self.log_info(f'char dead')
-                    if not self.revive_action():
-                        self.raise_not_in_combat(f'char dead', exception_type=CharDeadException)
+                self.raise_not_in_combat(f'not in_team while switching')
                 if now - start > self.switch_char_time_out:
                     self.raise_not_in_combat(
                         f'switch too long failed chars_{current_char}_to_{switch_to}, {now - start}')

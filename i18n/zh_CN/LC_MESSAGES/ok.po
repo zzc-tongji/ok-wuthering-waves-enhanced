@@ -788,3 +788,17 @@ msgstr "梦魇拔除"
 
 msgid "Tacet Discord Nest"
 msgstr "残像聚落"
+
+msgid "Switch to Healer after Combat"
+msgstr "战斗结束后切换到治疗角色"
+
+msgid "Better Chance to Keep Character Alive"
+msgstr "提高角色生存率"
+
+msgid "Pause after Success"
+msgstr "符合条件后暂停"
+
+msgid "When a success occurs, send notification and pause task"
+msgstr "当强化出符合条件的声骸并锁定后，发送通知并暂停任务"
+
+
