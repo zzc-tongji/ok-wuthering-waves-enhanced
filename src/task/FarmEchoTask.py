@@ -78,8 +78,6 @@ class FarmEchoTask(WWOneTimeTask, BaseCombatTask):
         self.is_revived = True
         return True
 
-
-
     def run(self):
         WWOneTimeTask.run(self)
         self.use_liberation = self.config.get('Use Liberation')
