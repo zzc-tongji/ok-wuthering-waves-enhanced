@@ -20,11 +20,11 @@ class DailyTask2(TacetTask2, ForgeryTask2, SimulationTask2):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.icon = FluentIcon.CAR
         self.name = '⭐ Daily Task'
         self.group_name = "Daily"
         self.group_icon = FluentIcon.CALENDAR
-        self.description = 'open game, login, monthly card, mail, farm, activity, radio'
+        self.icon = FluentIcon.CAR
+        self.support_schedule_task = True
         self.default_config = {
             'Teleport Timeout': 10,
             'Which Tacet Suppression to Farm': 1,
@@ -50,8 +50,15 @@ class DailyTask2(TacetTask2, ForgeryTask2, SimulationTask2):
             'Task Retry': 'retry time(s) for each task',
             'Exit with Error': 'exit game and app with exception raised when option [Exit After Task] checked'
         }
-        self.show_create_shortcut = True
+        material_option_list = ['Resonator EXP', 'Weapon EXP', 'Shell Credit']
+        self.config_type = {
+            'Material Selection': {
+                'type': 'drop_down',
+                'options': material_option_list
+            },
+        }
         self.add_exit_after_config()
+        self.description = 'open game, login, monthly card, mail, farm, activity, radio'
 
     def run(self):
         self.teleport_timeout = self.config.get('Teleport Timeout', 10)
