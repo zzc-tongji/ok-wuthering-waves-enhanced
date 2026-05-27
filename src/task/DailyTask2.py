@@ -27,9 +27,9 @@ class DailyTask2(TacetTask2, ForgeryTask2, SimulationTask2):
         self.support_schedule_task = True
         self.default_config = {
             'Teleport Timeout': 10,
-            'Which Tacet Suppression to Farm': 1,
+            'Which Tacet Suppression to Farm': 1,  # starts with 1
             'Tacet Suppression Count': 0,
-            'Which Forgery Challenge to Farm': 1,
+            'Which Forgery Challenge to Farm': 1,  # starts with 1
             'Forgery Challenge Count': 0,
             'Material Selection': 'Shell Credit',
             'Simulation Challenge Count': 0,
