@@ -1,5 +1,5 @@
 import time
-from src.char.BaseChar import BaseChar, Priority
+from src.char.BaseChar import BaseChar, SwitchPriority
 
 
 class Mornye(BaseChar):
@@ -81,11 +81,14 @@ class Mornye(BaseChar):
 
     def combo_limit(self):
         return self.time_elapsed_accounting_for_freeze(self.last_heavy) < 23
+
+    def get_switch_priority(self, current_char=None, has_intro=False, target_low_con=False):
+        if has_intro and current_char and current_char.char_name in {'char_aemeath'}:
+            return SwitchPriority.MUST
+        from src.char.Linnai import Linnai
+        if has_intro and current_char and self.task.has_char(Linnai) and current_char.char_name not in {'char_linnai'}:
+            return SwitchPriority.MUST
+        return super().get_switch_priority(current_char, has_intro, target_low_con)
         
     def detect_elbow_strike(self, ready):
         return ready and not self.available('echo', check_color=True)
-
-    def do_get_switch_priority(self, current_char: BaseChar, has_intro=False, target_low_con=False):
-        if has_intro and current_char.char_name in {'char_aemeath'}:
-            return Priority.MAX
-        return super().do_get_switch_priority(current_char, has_intro)

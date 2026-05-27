@@ -1,7 +1,7 @@
 import time
 from decimal import Decimal, ROUND_HALF_UP, ROUND_DOWN, ROUND_UP
 from ok import color_range_to_bound
-from src.char.BaseChar import BaseChar, Priority
+from src.char.BaseChar import BaseChar, SwitchPriority
 import cv2
 import numpy as np
 
@@ -20,11 +20,10 @@ class Camellya(BaseChar):
         super().reset_state()
         self.waiting_for_forte_drop = False
 
-    def do_get_switch_priority(self, current_char: BaseChar, has_intro=False, target_low_con=False):
+    def get_switch_priority(self, current_char=None, has_intro=False, target_low_con=False):
         if has_intro:
-            return Priority.MAX - 1
-        else:
-            return super().do_get_switch_priority(current_char, has_intro)
+            return SwitchPriority.MUST
+        return super().get_switch_priority(current_char, has_intro, target_low_con)
 
     def wait_resonance_not_gray(self, timeout=5):
         start = time.time()
@@ -104,7 +103,7 @@ class Camellya(BaseChar):
         self.click_echo()
         self.switch_next_char()
 
-    def click_echo(self, *args):
+    def click_echo(self, *args, **kwargs):
         if self.echo_available():
             self.send_echo_key()
             return True

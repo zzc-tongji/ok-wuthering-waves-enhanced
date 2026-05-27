@@ -1,5 +1,5 @@
 import time
-from src.char.BaseChar import BaseChar, forte_white_color, Priority
+from src.char.BaseChar import BaseChar, SwitchPriority, forte_white_color
 
 
 class Cantarella(BaseChar):
@@ -7,11 +7,16 @@ class Cantarella(BaseChar):
         super().__init__(*args, **kwargs)
         self.last_heavy = -1
 
+    def get_switch_priority(self, current_char=None, has_intro=False, target_low_con=False):
+        if has_intro and current_char and current_char.char_name in {'char_roccia', 'char_sanhua', 'char_sanhua2'}:
+            return SwitchPriority.MUST
+        return super().get_switch_priority(current_char, has_intro, target_low_con)
+
     def do_perform(self):
         perform_under_outro = False
         if self.has_intro:
             self.continues_normal_attack(1.2)
-            if self.check_outro() in {'char_roccia', 'char_sanhua', 'char_sanhua2'}:
+            if self.has_sub_dps_intro and self.check_outro() in {'char_roccia', 'char_sanhua', 'char_sanhua2'}:
                 perform_under_outro = True
         self.click_liberation()
         if self.is_mouse_forte_full() or not self.is_forte_full():
@@ -67,8 +72,3 @@ class Cantarella(BaseChar):
         self.logger.debug(f'forte_color_percent {white_percent}')
         return white_percent > 0.06
         
-    def do_get_switch_priority(self, current_char: BaseChar, has_intro=False, target_low_con=False):
-        if has_intro and current_char.char_name in {'char_roccia', 'char_sanhua', 'char_sanhua2'}:
-            return Priority.MAX-1
-        return super().do_get_switch_priority(current_char, has_intro)
-

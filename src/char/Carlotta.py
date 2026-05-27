@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 
 from ok import color_range_to_bound
-from src.char.BaseChar import BaseChar, Priority
+from src.char.BaseChar import BaseChar, SwitchPriority
 
 
 class Carlotta(BaseChar):
@@ -58,16 +58,6 @@ class Carlotta(BaseChar):
         self.continues_normal_attack(0.31)
         self.switch_next_char()
 
-    def do_get_switch_priority(self, current_char: BaseChar, has_intro=False, target_low_con=False):
-        if self.press_w == -1:
-            self.decide_teammate()
-        if has_intro and self.check_outro() in {'char_zhezhi'}:
-            return Priority.MAX
-        if self.char_zhezhi is not None and self.forte == 0:
-            return Priority.FAST_SWITCH + 1
-        else:
-            return super().do_get_switch_priority(current_char, has_intro)
-
     def click_liberation_1(self):
         if self.press_w == 1:
             self.task.send_key_down(key='w')
@@ -77,7 +67,7 @@ class Carlotta(BaseChar):
         else:
             return self.click_liberation()
 
-    def click_liberation(self):
+    def click_liberation(self, con_less_than=-1, send_click=False, wait_if_cd_ready=0.1):
         self.logger.debug('click_liberation start')
         start = time.time()
         last_click = 0
@@ -115,7 +105,7 @@ class Carlotta(BaseChar):
             self.task.next_frame()
         duration = time.time() - start
         self.add_freeze_duration(start, duration)
-        self.update_liberation_cd()
+        self.record_liberation_use()
         self.task.in_liberation = False
         self._liberation_available = False
         if clicked:
@@ -123,7 +113,7 @@ class Carlotta(BaseChar):
         return clicked
 
     def click_resonance(self, post_sleep=0, has_animation=False, send_click=True, animation_min_duration=0,
-                        check_cd=False):
+                        check_cd=False, time_out=0):
         clicked = False
         self.logger.debug(f'click_resonance start')
         last_click = 0
@@ -133,7 +123,7 @@ class Carlotta(BaseChar):
         start = time.time()
         last = start
         while True:
-            if time.time() - start > 10:
+            if time.time() - start > (time_out or 10):
                 self.task.in_liberation = False
                 self.alert_skill_failed()
                 break
@@ -155,7 +145,7 @@ class Carlotta(BaseChar):
                     if resonance_click_time == 0:
                         clicked = True
                         resonance_click_time = now
-                        self.update_res_cd()
+                        self.record_resonance_use()
                     last_op = 'resonance'
                     self.send_resonance_key()
                     if has_animation:  # sleep if there will be an animation like Jinhsi
@@ -174,6 +164,13 @@ class Carlotta(BaseChar):
             return not self.has_cd('echo')
         else:
             return not self.task.has_cd('echo', self.index)
+
+    def get_switch_priority(self, current_char=None, has_intro=False, target_low_con=False):
+        if self.press_w == -1:
+            self.decide_teammate()
+        if has_intro and current_char and current_char.char_name in {'char_zhezhi'}:
+            return SwitchPriority.MUST
+        return super().get_switch_priority(current_char, has_intro, target_low_con)
 
     def decide_teammate(self):
         from src.char.Zhezhi import Zhezhi

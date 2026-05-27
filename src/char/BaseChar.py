@@ -11,25 +11,17 @@ from src import text_white_color  # noqa
 SKILL_TIME_OUT = 15
 
 
-class Priority(IntEnum):
-    """定义切换角色的优先级枚举。"""
-    MIN = -999999999  # 最低优先级
-    SWITCH_CD = -1000  # 切换冷却中
-    CURRENT_CHAR = -100  # 当前角色
-    CURRENT_CHAR_PLUS = CURRENT_CHAR + 1  # 当前角色稍高优先级 (特殊情况)
-    SKILL_AVAILABLE = 100  # 有可用技能
-    BASE_MINUS_1 = -1
-    BASE = 0
-    MAX = 9999999999  # 最高优先级
-    FAST_SWITCH = MAX - 100  # 快速切换优先级 (例如应对特殊机制)
-
-
-class Role(StrEnum):
+class CharType(StrEnum):
     """定义角色定位枚举。"""
-    DEFAULT = 'Default'  # 默认/未知定位
-    SUB_DPS = 'Sub DPS'  # 副输出
-    MAIN_DPS = 'Main DPS'  # 主输出
+    MAIN_DPS = 'MainDps'  # 主输出
+    SUB_DPS = 'SubDps'  # 副输出
     HEALER = 'Healer'  # 治疗者
+
+
+class SwitchPriority(StrEnum):
+    NORMAL = 'normal'
+    MUST = 'must'
+    NO = 'no'
 
 
 class Elements(IntEnum):
@@ -41,39 +33,45 @@ class Elements(IntEnum):
     HAVOC = 5
 
 
-role_values = [role for role in Role]  # 角色定位枚举值的列表
+Role = CharType
+role_values = [role for role in CharType]  # 角色定位枚举值的列表
+
+DEFAULT_BUFF_TIME_BY_TYPE = {
+    CharType.MAIN_DPS: 0,
+    CharType.SUB_DPS: 14,
+    CharType.HEALER: 24,
+}
+
+
+def get_default_buff_time(char_type=CharType.MAIN_DPS):
+    return DEFAULT_BUFF_TIME_BY_TYPE.get(CharType(char_type or CharType.MAIN_DPS), 0)
 
 
 class BaseChar:
     """角色基类，定义了游戏角色的通用属性和行为。"""
 
-    def __init__(self, task, index, res_cd=20, echo_cd=20, liberation_cd=25, char_name=None, confidence=1,
-                 ring_index=-1):
+    def __init__(self, task, index, char_name=None, confidence=1, ring_index=-1, char_type=CharType.MAIN_DPS,
+                 buff_time=None):
         """初始化角色基础属性。
 
         Args:
             task (BaseCombatTask): 所属的战斗任务对象。
             index (int): 角色在队伍中的索引 (0, 1, 2)。
-            res_cd (int, optional): 共鸣技能冷却时间 (秒)。默认为 20。
-            echo_cd (int, optional): 声骸技能冷却时间 (秒)。默认为 20。
-            liberation_cd (int, optional): 共鸣解放冷却时间 (秒)。默认为 25。
             char_name (str, optional): 角色名称。默认为 None。
         """
-        self.priority = Priority.BASE
         self.white_off_threshold = 0.01
-        self.echo_cd = echo_cd
         self.task = task
-        self.liberation_cd = liberation_cd
         self.sleep_adjust = 0
         self.char_name = char_name
         self.index = index
         self.ring_index = ring_index  # for con check
         self.last_switch_time = -1
+        self.last_switch_in_time = -1
         self.last_res = -1
         self.last_echo = -1
         self.last_liberation = -1
         self.has_intro = False
-        self.res_cd = res_cd
+        self.has_sub_dps_intro = False
         self.is_current_char = False
         self._liberation_available = False
         self._resonance_available = False
@@ -85,18 +83,71 @@ class BaseChar:
         self.intro_motion_freeze_duration = 0.9
         self.last_outro_time = -1
         self.confidence = confidence
+        self._buff_time = 0
+        self._buff_time_configured = False
+        self.set_char_type(char_type)
+        self.set_buff_time(buff_time)
+        self.last_buff_time = -1
         self.logger = Logger.get_logger(self.name)
         self.check_f_on_switch = True
         self.cycle_start_time = 0.0
+        self.cycle_time_out = 1.1
+        self.cycle_intro_time = 1.2
+
+    def set_char_type(self, char_type=CharType.MAIN_DPS):
+        """设置角色定位，默认为主输出。"""
+        self.char_type = CharType(char_type or CharType.MAIN_DPS)
+        if not self._buff_time_configured:
+            self._buff_time = get_default_buff_time(self.char_type)
+
+    def set_buff_time(self, buff_time=None):
+        self._buff_time_configured = buff_time is not None
+        self._buff_time = get_default_buff_time(self.char_type) if buff_time is None else float(buff_time)
+
+    @property
+    def type(self):
+        return self.char_type
+
+    @property
+    def is_healer(self):
+        return self.char_type == CharType.HEALER
+
+    @property
+    def is_main_dps(self):
+        return self.char_type == CharType.MAIN_DPS
+
+    @property
+    def is_sub_dps(self):
+        return self.char_type == CharType.SUB_DPS
+
+    @property
+    def buff_time(self):
+        return self._buff_time
+
+    def has_buff(self):
+        return self.buff_time > 0 and self.last_buff_time > 0 and (
+                self.time_elapsed_accounting_for_freeze(self.last_buff_time) < self.buff_time)
+
+    def cycle(self):
+        self.cycle_start()
+        while self.time_elapsed_accounting_for_freeze(
+                self.cycle_start_time) < self.cycle_time_out + self.cycle_intro_time:
+            if self.do_cycle():
+                self.cycle_sleep()
+                continue
+            else:
+                break
+        self.switch_next_char()
+
+    def do_cycle(self):
+        return
 
     def cycle_start(self):
         self.cycle_start_time = time.time()
 
     def cycle_sleep(self, duration=0.1):
         to_sleep = duration - (time.time() - self.cycle_start_time)
-        if to_sleep > 0.05:
-            self.check_combat()
-        self.sleep(duration - (time.time() - self.cycle_start_time))
+        self.sleep(to_sleep)
 
     def flying_based_on_resonance(self):
         if not self.has_cd('resonance') and not self.task.box_highlighted('resonance'):
@@ -134,10 +185,7 @@ class BaseChar:
     def perform(self):
         """执行当前角色的主要战斗行动序列。"""
         self.last_perform = time.time()
-        if self.need_fast_perform():
-            self.do_fast_perform()
-        else:
-            self.do_perform()
+        self.do_perform()
         self.logger.debug(f'set current char false {self.index}')
 
     def wait_down(self, click=True):
@@ -191,20 +239,12 @@ class BaseChar:
 
     def do_perform(self):
         """执行角色的标准战斗行动。"""
-        if self.has_intro:
-            self.logger.debug('has_intro wait click 1.2 sec')
-            self.continues_normal_attack(1.2, click_resonance_if_ready_and_return=True)
-        self.click_liberation(con_less_than=1)
-        if self.click_resonance()[0]:
-            return self.switch_next_char()
-        if self.click_echo():
-            return self.switch_next_char()
-        self.continues_normal_attack(0.31)
+        self.wait_intro(1.2)
+        self.click_echo(time_out=0)
+        self.click_liberation()
+        if not self.click_resonance()[0]:
+            self.heavy_click_forte(self.is_mouse_forte_full)
         self.switch_next_char()
-
-    def do_fast_perform(self):
-        """执行角色的快速战斗行动 (通常在需要快速切换时)。"""
-        self.do_perform()
 
     def has_cd(self, box_name):
         """检查指定技能是否在冷却中 (代理到 task.has_cd)。
@@ -229,12 +269,15 @@ class BaseChar:
         """
         return percent == 0 or not self.has_cd(box_name)
 
-    def switch_out(self):
+    def switch_out(self, con_full=False):
         """角色被切换下场时的状态更新。"""
         self.last_switch_time = time.time()
         self.is_current_char = False
         self.has_intro = False
-        if self.current_con == 1:
+        self.has_sub_dps_intro = False
+        if con_full or self.current_con == 1:
+            if self.buff_time > 0:
+                self.last_buff_time = self.last_switch_time
             self.logger.info(f'switch_out at full con set current_con to 0')
             self.current_con = 0
 
@@ -252,6 +295,7 @@ class BaseChar:
         """
         self.is_forte_full()
         self.has_intro = False
+        self.has_sub_dps_intro = False
         self._liberation_available = self.liberation_available()
         self.use_tool_box()
         self.task.switch_next_char(self, post_action=post_action, free_intro=free_intro,
@@ -335,7 +379,7 @@ class BaseChar:
                     if resonance_click_time == 0:
                         clicked = True
                         resonance_click_time = now
-                        self.update_res_cd()
+                        self.record_resonance_use()
                     last_op = 'resonance'
                     self.send_resonance_key()
                     if has_animation:  # sleep if there will be an animation like Jinhsi
@@ -396,23 +440,17 @@ class BaseChar:
         self._liberation_available = False
         self.task.send_key(self.get_liberation_key(), interval=interval, down_time=down_time, after_sleep=after_sleep)
 
-    def update_res_cd(self):
+    def record_resonance_use(self):
         """更新共鸣技能的最后使用时间。"""
-        current = time.time()
-        if current - self.last_res > self.res_cd:  # count the first click only
-            self.last_res = time.time()
+        self.last_res = time.time()
 
-    def update_liberation_cd(self):
+    def record_liberation_use(self):
         """更新共鸣解放的最后使用时间。"""
-        current = time.time()
-        if current - self.last_liberation > (self.liberation_cd - 2):  # count the first click only
-            self.last_liberation = time.time()
+        self.last_liberation = time.time()
 
-    def update_echo_cd(self):
+    def record_echo_use(self):
         """更新声骸技能的最后使用时间。"""
-        current = time.time()
-        if current - self.last_echo > self.echo_cd:  # count the first click only
-            self.last_echo = time.time()
+        self.last_echo = time.time()
 
     def click_echo(self, duration=0, sleep_time=0, time_out=1):
         """尝试点击并释放声骸技能。
@@ -427,8 +465,8 @@ class BaseChar:
         """
         if time_out == 0 and self.echo_available():
             self.send_echo_key()
-            self.update_echo_cd()
-            self.logger.debug('flick echo')
+            self.record_echo_use()
+            self.logger.debug('click echo')
             return True
         if self.task.is_open_world_auto_combat() and self.ring_index == Elements.FIRE:
             self.logger.debug(f'open world do not use motorcycle echo')
@@ -445,7 +483,6 @@ class BaseChar:
             if time.time() - start > time_out:
                 self.logger.info("click_echo time out")
                 return False
-            self.check_combat()
             if not self.echo_available() and (duration == 0 or not clicked):
                 break
             now = time.time()
@@ -454,7 +491,7 @@ class BaseChar:
                     break
             if now - last_click > 0.1:
                 if not clicked:
-                    self.update_echo_cd()
+                    self.record_echo_use()
                     clicked = True
                 self.send_echo_key()
                 last_click = now
@@ -476,6 +513,7 @@ class BaseChar:
     def reset_state(self):
         """重置角色的战斗相关状态 (如入场技标记)。"""
         self.has_intro = False
+        self.has_sub_dps_intro = False
         self.current_con = 0
         self.has_tool_box = False
         self._liberation_available = False
@@ -548,7 +586,7 @@ class BaseChar:
             self.task.next_frame()
         duration = time.time() - start
         self.add_freeze_duration(start, duration)
-        self.update_liberation_cd()
+        self.record_liberation_use()
         self.task.in_liberation = False
         self._liberation_available = False
         if clicked:
@@ -583,67 +621,9 @@ class BaseChar:
         """获取共鸣技能按键 (代理到 task.get_resonance_key)。"""
         return self.task.get_resonance_key()
 
-    def get_switch_priority(self, current_char, has_intro, target_low_con):
-        """获取切换到此角色的优先级。
-
-        Args:
-            current_char (BaseChar): 当前场上角色。
-            has_intro (bool): 当前场上角色是否拥有入场技 (通常因协奏值满)。
-            target_low_con (bool): 队伍策略是否倾向于切换到低协奏值角色。
-
-        Returns:
-            Priority: 优先级数值。
-        """
-        priority = self.do_get_switch_priority(current_char, has_intro, target_low_con)
-        if priority < Priority.MAX and time.time() - self.last_switch_time < 0.9 and not has_intro:
-            return Priority.SWITCH_CD  # switch cd
-        else:
-            return priority
-
-    def do_get_switch_priority(self, current_char, has_intro=False, target_low_con=False):
-        """计算切换到此角色的基础优先级 (不考虑切换CD)。
-
-        Args:
-            current_char (BaseChar): 当前场上角色。
-            has_intro (bool, optional): 当前场上角色是否拥有入场技。默认为 False。
-            target_low_con (bool, optional): 队伍策略是否倾向于切换到低协奏值角色。默认为 False。
-
-        Returns:
-            int: 基础优先级数值。
-        """
-        priority = self.priority
-        if self.count_liberation_priority() and self.liberation_available():
-            priority += self.count_liberation_priority()
-        if self.count_resonance_priority() and self.resonance_available():
-            priority += self.count_resonance_priority()
-        if self.count_forte_priority():
-            priority += self.count_forte_priority()
-        if self.echo_available():
-            priority += self.count_echo_priority()
-        if priority > 0:
-            priority += Priority.SKILL_AVAILABLE
-        priority += self.count_base_priority()
-        return priority
-
-    def count_base_priority(self):
-        """计算角色的基础优先级值。"""
-        return 0
-
-    def count_liberation_priority(self):
-        """计算共鸣解放技能对切换优先级的贡献值。"""
-        return 1
-
-    def count_resonance_priority(self):
-        """计算共鸣技能对切换优先级的贡献值。"""
-        return 10
-
-    def count_echo_priority(self):
-        """计算声骸技能对切换优先级的贡献值。"""
-        return 1
-
-    def count_forte_priority(self):
-        """计算共鸣回路技能对切换优先级的贡献值。"""
-        return 0
+    def get_switch_priority(self, current_char=None, has_intro=False, target_low_con=False):
+        """Return whether this character is a normal, required, or blocked switch target."""
+        return SwitchPriority.NORMAL
 
     def resonance_available(self):
         """判断共鸣技能是否可用。
@@ -750,9 +730,12 @@ class BaseChar:
         while self.time_elapsed_accounting_for_freeze(self.last_perform) < 1.1:
             self.task.click(interval=0.1)
 
+    def need_fast_perform(self):
+        return self.time_elapsed_accounting_for_freeze(self.last_perform) <= 1
+
     def wait_switch_cd(self):
         since_last_switch = self.time_elapsed_accounting_for_freeze(self.last_perform)
-        if since_last_switch < 1:
+        if since_last_switch <= 1:
             self.logger.debug(f'wait_switch_cd {since_last_switch}')
             self.continues_normal_attack(1 - since_last_switch)
 
@@ -846,23 +829,6 @@ class BaseChar:
         percent = self.task.calculate_color_percentage(text_white_color, self.task.get_box_by_name('edge_levitator'))
         return percent < 0.1
 
-    def need_fast_perform(self):
-        """判断是否需要执行快速行动序列 (通常为了快速切换给高优先级队友)。
-
-        Returns:
-            bool: 如果需要则返回 True。
-        """
-        current_char = self.task.get_current_char(raise_exception=False)
-        for i, char in enumerate(self.task.chars):
-            if char == current_char:
-                pass
-            else:
-                priority = char.do_get_switch_priority(current_char=current_char, has_intro=False, target_low_con=False)
-                if priority >= Priority.FAST_SWITCH:
-                    self.logger.info(f'In lock with {char}')
-                    return True
-        return False
-
     def check_outro(self):
         """协奏入场时判断延奏来源
 
@@ -894,10 +860,9 @@ class BaseChar:
         return False
 
     def switch_other_char(self):
-        from src.char.Healer import Healer
         target_index = (self.index + 1) % len(self.task.chars)
         for char in self.task.chars:
-            if char and isinstance(char, Healer) and char.index != self.index:
+            if char and char.is_healer and char.index != self.index:
                 target_index = char.index
                 break
         next_char = str(target_index + 1)

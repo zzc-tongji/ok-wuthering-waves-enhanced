@@ -1,9 +1,9 @@
 import time
 
-from src.char.Healer import Healer
+from src.char.BaseChar import BaseChar
 
 
-class Douling(Healer):
+class Douling(BaseChar):
 
     def do_perform(self):
         if self.has_intro:
@@ -15,7 +15,7 @@ class Douling(Healer):
             if self.click_liberation(wait_if_cd_ready=False):
                 self.sleep(0.001)
                 continue
-            elif self.click_resonance(send_click=True, time_out=0):
+            elif self.click_resonance(send_click=True, time_out=0)[0]:
                 self.sleep(0.001)
                 continue
             else:

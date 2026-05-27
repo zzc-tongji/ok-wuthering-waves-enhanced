@@ -1,6 +1,6 @@
 import time
 
-from src.char.BaseChar import BaseChar, Priority
+from src.char.BaseChar import BaseChar, SwitchPriority
 
 
 class Jinhsi(BaseChar):
@@ -29,29 +29,17 @@ class Jinhsi(BaseChar):
         self.has_free_intro = False
         self.incarnation_cd = False
 
+    def get_switch_priority(self, current_char=None, has_intro=False, target_low_con=False):
+        if has_intro or self.incarnation or self.incarnation_cd:
+            self.logger.info(
+                f'switch priority max because has_intro {has_intro} incarnation {self.incarnation} incarnation_cd '
+                f'{self.incarnation_cd}')
+            return SwitchPriority.MUST
+        return SwitchPriority.NO
+
     def switch_next_char(self, **args):
         super().switch_next_char(free_intro=self.has_free_intro, target_low_con=True)
         self.has_free_intro = False
-
-    def do_get_switch_priority(self, current_char: BaseChar, has_intro=False, target_low_con=False):
-        if has_intro or self.incarnation or self.incarnation_cd:
-            self.logger.info(
-                f'switch priority max because has_intro {has_intro} incarnation {self.incarnation} incarnation_cd {self.incarnation_cd}')
-            return Priority.MAX
-        else:
-            return Priority.MIN
-
-    def count_base_priority(self):
-        return -3
-
-    def count_resonance_priority(self):
-        return 0
-
-    def count_echo_priority(self):
-        return 10
-
-    def count_liberation_priority(self):
-        return 0
 
     def handle_incarnation(self):
         self.incarnation = False

@@ -15,6 +15,7 @@ from src.scene.WWScene import WWScene
 logger = Logger.get_logger(__name__)
 number_re = re.compile(r'(\d+)')
 stamina_re = re.compile(r'(\d+)/(\d+)')
+LOGIN_TEXTS = ["登录", 'Login', '登入']
 f_white_color = {
     'r': (235, 255),  # Red range
     'g': (235, 255),  # Green range
@@ -28,7 +29,6 @@ class BaseWWTask(BaseTask):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.pick_echo_config = self.get_global_config('Pick Echo Config')
         self.monthly_card_config = self.get_global_config('Monthly Card Config')
         self.char_config = self.get_global_config('Character Config')
         self.key_config = self.get_global_config('Game Hotkey Config')  # 游戏热键配置
@@ -330,7 +330,7 @@ class BaseWWTask(BaseTask):
         return self.find_one('treasure_icon', box=self.box_of_screen(0.18, 0.1, 0.82, 0.81), threshold=0.8,
                              target_height=720)
 
-    def click(self, x=-1, y=-1, move_back=False, name=None, interval=-1, move=True, down_time=0.01, after_sleep=0,
+    def click(self, x=-1, y=-1, move_back=False, name=None, interval=-1, move=False, down_time=0.01, after_sleep=0,
               key="left"):
         if x == -1 and y == -1:
             x = self.width_of_screen(0.5)
@@ -703,7 +703,8 @@ class BaseWWTask(BaseTask):
                 return False
             texts = self.ocr(log=self.debug)
 
-            if login := self.find_boxes(texts, boundary=self.box_of_screen(0.3, 0.3, 0.7, 0.7), match="登录"):
+            if login := self.find_boxes(texts, boundary=self.box_of_screen(0.3, 0.3, 0.7, 0.7),
+                                        match=LOGIN_TEXTS):
                 if not self.find_boxes(texts, boundary=self.box_of_screen(0.3, 0.3, 0.7, 0.7), match="+86"):
                     self.click(login, after_sleep=1)
                     self.log_info('点击登录按钮!')
@@ -714,17 +715,17 @@ class BaseWWTask(BaseTask):
                     self.click(agree, after_sleep=1)
                     self.log_info('点击同意按钮!')
                 return False
-            if self.find_boxes(texts, match=re.compile("游戏即将重启")):
+            if self.find_boxes(texts, match=[re.compile("游戏即将重启"), re.compile('遊戲即將重啟')]):
                 self.sleep(0.2)
                 self.log_info('游戏更新成功, 游戏即将重启')
-                self.click(self.find_boxes(texts, match="确认"), after_sleep=60)
+                self.click(self.find_boxes(texts, match=["确认", "確認"]), after_sleep=60)
                 result = self.start_device()
                 self.log_info(f'start_device end {result}')
                 self.sleep(30)
                 return False
 
             if start := self.find_boxes(texts, boundary='bottom_right', match=["开始游戏", re.compile("进入游戏")]):
-                if not self.find_boxes(texts, boundary='bottom_right', match="登录"):
+                if not self.find_boxes(texts, boundary='bottom_right', match=LOGIN_TEXTS):
                     self.click(start)
                     self.log_info(f'点击开始游戏! {start}')
                     return False
@@ -931,6 +932,11 @@ class BaseWWTask(BaseTask):
         self.send_key_up('alt')
         self.sleep(0.5)
 
+    def open_boss_book(self, name, after_sleep=1):
+        self.log_info(f'open_boss_book {name}')
+        self.wait_click_feature(f'book_{name}', vertical_variance=0.05, after_sleep=after_sleep,
+                                raise_if_not_found=False)
+
     def openF2Book(self, feature="gray_book_all_monsters", opened=False):
         if hasattr(self, 'reset_to_false'):
             self.reset_to_false('opening book')
@@ -971,12 +977,15 @@ class BaseWWTask(BaseTask):
                             time_out=2):
                         self.click(0.49, 0.55, after_sleep=0.5)  # 点击不再提醒
                         self.click(confirm, after_sleep=0.5)
-                        self.wait_click_feature(
-                            ['confirm_btn_hcenter_vcenter', 'confirm_btn_highlight_hcenter_vcenter'],
-                            relative_x=-1, raise_if_not_found=False,
-                            threshold=0.6,
-                            time_out=1)
+                        self.click_confirm()
                 return True
+
+    def click_confirm(self, timeout=1):
+        self.wait_click_feature(
+            ['confirm_btn_hcenter_vcenter', 'confirm_btn_highlight_hcenter_vcenter'],
+            relative_x=-1, raise_if_not_found=False,
+            threshold=0.6,
+            time_out=1)
 
     def wait_click_travel(self):
         self.wait_until(self.click_traval_button, raise_if_not_found=True, time_out=10)

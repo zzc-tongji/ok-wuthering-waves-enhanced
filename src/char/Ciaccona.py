@@ -2,7 +2,7 @@ import time
 import cv2
 import numpy as np
 from ok import color_range_to_bound
-from src.char.BaseChar import BaseChar, Priority
+from src.char.BaseChar import BaseChar, SwitchPriority
 
 
 class Ciaccona(BaseChar):
@@ -63,16 +63,16 @@ class Ciaccona(BaseChar):
             self.click_echo()
         self.switch_next_char()
 
-    def do_get_switch_priority(self, current_char: BaseChar, has_intro=False, target_low_con=False):
+    def get_switch_priority(self, current_char=None, has_intro=False, target_low_con=False):
         if self.attribute == 2 and self.in_liberation and self.time_elapsed_accounting_for_freeze(
                 self.last_liberation) < 20:
-            return Priority.MIN
+            return SwitchPriority.NO
         if self.attribute == 3:
             self.logger.debug(f'ciaccona cond: {self.cartethyia.is_cartethyia}')
         if self.attribute == 3 and self.in_liberation and (
                 self.time_elapsed_accounting_for_freeze(self.last_liberation) < 8 or not self.cartethyia.is_cartethyia):
-            return Priority.MIN
-        return super().do_get_switch_priority(current_char, has_intro)
+            return SwitchPriority.NO
+        return super().get_switch_priority(current_char, has_intro, target_low_con)
 
     def click_jump_with_click(self, delay=0.1):
         start = time.time()
@@ -158,13 +158,19 @@ class Ciaccona(BaseChar):
         self.logger.info(f'Frequncy analysis with forte {forte}')
         return forte
 
-    def switch_next_char(self, *args):
+    def switch_next_char(self, *args, **kwargs):
         if self.is_con_full():
             self.outrotime = time.time()
-        return super().switch_next_char(*args)
+        return super().switch_next_char(*args, **kwargs)
 
     def in_outro(self):
         return self.time_elapsed_accounting_for_freeze(self.outrotime) < 30
+        
+    def need_fast_perform(self):
+        from src.char.Cartethyia import Cartethyia
+        if self.task.has_char(Cartethyia) and hasattr(Cartethyia, 'is_cartethyia'):
+            return Cartethyia.is_cartethyia
+        return False
 
 
 ciaccona_forte_color = {

@@ -1,6 +1,6 @@
 import time
 
-from src.char.BaseChar import BaseChar, Priority
+from src.char.BaseChar import BaseChar, SwitchPriority
 
 
 class Brant(BaseChar):
@@ -20,7 +20,7 @@ class Brant(BaseChar):
         self.decide_teammate()
         if self.has_intro:
             self.continues_normal_attack(1.3)
-            if self.check_outro() in {'char_lupa'} and self.perform_in_outro():
+            if self.has_sub_dps_intro and self.check_outro() in {'char_lupa'} and self.perform_in_outro():
                 return self.switch_next_char()
         self.f_break()
         if self.is_forte_full() and self.resonance_available():
@@ -107,18 +107,15 @@ class Brant(BaseChar):
             click = 1 - click
             self.task.next_frame()
 
-    def do_get_switch_priority(self, current_char: BaseChar, has_intro=False, target_low_con=False):
+    def get_switch_priority(self, current_char=None, has_intro=False, target_low_con=False):
         self.decide_teammate()
         if self.time_elapsed_accounting_for_freeze(self.perform_anchor, True) < 4:
-            return Priority.MIN
+            return SwitchPriority.NO
         if self.still_in_liberation():
-            return Priority.MAX
-        if has_intro and current_char.char_name in {'char_lupa'}:
-            return Priority.MAX
-        base = 0
-        if self.char_lupa is not None and self.char_lupa.still_in_liberation():
-            base = -20
-        return super().do_get_switch_priority(current_char, has_intro) + base
+            return SwitchPriority.MUST
+        if has_intro and current_char and current_char.char_name in {'char_lupa'}:
+            return SwitchPriority.MUST
+        return super().get_switch_priority(current_char, has_intro, target_low_con)
 
     def decide_teammate(self):
         if self.attribute > 0:

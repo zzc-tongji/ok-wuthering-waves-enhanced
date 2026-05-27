@@ -2,7 +2,7 @@ import re
 import cv2
 from qfluentwidgets import FluentIcon
 from ok import Logger
-from src.task.BaseCombatTask import BaseCombatTask, NotInCombatException, CharRevivedException
+from src.task.BaseCombatTask import BaseCombatTask, CharRevivedException
 from src.task.WWOneTimeTask import WWOneTimeTask
 
 logger = Logger.get_logger(__name__)
@@ -57,7 +57,7 @@ class NightmareNestTask(WWOneTimeTask, BaseCombatTask):
         if self._capture_mode:
             self.pick_f(handle_claim=False)
             if self.has_echo_notification():
-                raise NotInCombatException
+                return self.reset_to_false(reason='echo captured')
         return True
 
     def has_echo_notification(self):
@@ -118,17 +118,16 @@ class NightmareNestTask(WWOneTimeTask, BaseCombatTask):
         self.queues = actions
 
     def go_nightmare(self):
-        self.click(0.17, 0.68, after_sleep=1)
+        self.open_boss_book('mengyan')
         self.log_info('go nightmare')
 
     def go_nightmare_scroll(self):
-        self.click(0.17, 0.68, after_sleep=1)
+        self.open_boss_book('mengyan')
         self.click(3737 / 3840, 0.54, after_sleep=1)
         self.log_info('go nightmare scroll')
 
     def go_nest(self):
-        self.click(0.17, 0.77, after_sleep=1)
-        self.log_info('go nest')
+        self.open_boss_book('canxiang')
 
     def find_nest(self):
         counts = self.ocr(0.36, 0.13, 0.98, 0.91, match=self.count_re)

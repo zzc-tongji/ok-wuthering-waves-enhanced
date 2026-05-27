@@ -704,3 +704,78 @@ msgstr ""
 
 msgid "Farm"
 msgstr ""
+
+msgid "Multi Account Daily Task"
+msgstr "マルチアカウントデイリータスク"
+
+msgid "Automatically switch accounts and run Daily Task for each account"
+msgstr "アカウントを自動で切り替え、各アカウントでデイリータスクを実行します"
+
+msgid "Completed"
+msgstr "完了"
+
+msgid "All Accounts"
+msgstr "すべてのアカウント"
+
+msgid "Switching back to login screen"
+msgstr "ログイン画面に戻っています"
+
+msgid "Back at login screen"
+msgstr "ログイン画面に戻りました"
+
+msgid "Current account: {account}"
+msgstr "現在のアカウント: {account}"
+
+msgid "Click next account: {account}"
+msgstr "次のアカウントをクリック: {account}"
+
+msgid "Selected account: {selected}, displayed account: {displayed}"
+msgstr "選択したアカウント: {selected}、表示中のアカウント: {displayed}"
+
+msgid "Confirmed selected account: {account}"
+msgstr "選択アカウントを確認しました: {account}"
+
+msgid "Account display does not match, retrying ({attempt}/{max_retries})"
+msgstr "表示中のアカウントが一致しません。再試行中 ({attempt}/{max_retries})"
+
+msgid "Account selection failed after {max_retries} retries; {account} is still not displayed. Continuing login attempt"
+msgstr "アカウント選択に {max_retries} 回失敗しました。{account} がまだ表示されていません。ログインを続行します"
+
+msgid "Failed to switch account"
+msgstr "アカウント切り替えに失敗しました"
+
+msgid "Login successful"
+msgstr "ログイン成功"
+
+msgid "Teleport to Boss"
+msgstr "ボスへテレポート"
+
+msgid "Boss Level"
+msgstr "ボスレベル"
+
+msgid "Teleport to Boss in F2 Menu"
+msgstr "F2メニューでボスへテレポート"
+
+msgid "Choose the Lowest that Drop a Echo"
+msgstr "音骸がドロップする最低レベルを選択"
+
+msgid "No"
+msgstr "いいえ"
+
+msgid "Weekly Challenge"
+msgstr "週間チャレンジ"
+
+msgid "Boss Challenge"
+msgstr "ボスチャレンジ"
+
+msgid "Which Weekly Boss to Teleport"
+msgstr "テレポートする週間ボス"
+
+msgid "Which Boss Challenge to Teleport"
+msgstr "テレポートするボスチャレンジ"
+
+msgid "For Example, Denia, From Top to Bottom, Starting with 1"
+msgstr "例: Denia。上から下へ、1から開始"
+
+msgid "For Example, Nameless Explorer, From Top to Bottom, Starting with 1"
+msgstr "例: Nameless Explorer。上から下へ、1から開始"
