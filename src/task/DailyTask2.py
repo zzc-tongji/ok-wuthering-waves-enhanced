@@ -95,6 +95,8 @@ class DailyTask2(TacetTask2, ForgeryTask2, SimulationTask2):
                     try:
                         self.info_set('nightmare nest attempt', i)
                         self.ensure_main(time_out=self.teleport_timeout)
+                        # 劫持 NightmareNestTask.ensure_main 避免梦魇打完关书
+                        self.get_task_by_class(NightmareNestTask).ensure_main = lambda *args, **kwargs: None
                         self.run_task_by_class(NightmareNestTask) if nightmare_all else self.get_task_by_class(NightmareNestTask).run_capture_mode()
                         break
                     except Exception as e:
@@ -103,6 +105,9 @@ class DailyTask2(TacetTask2, ForgeryTask2, SimulationTask2):
                         self.make_sure_in_world()
                         if (i >= self.config.get('Task Retry')):
                             self.log_error("梦魇祓除/残像聚落 任务未完成，需要手动登陆游戏处理。", notify=True)
+                    finally:
+                        # 还原 ensure_main，防范实例状态污染
+                        self.get_task_by_class(NightmareNestTask).__dict__.pop('ensure_main', None)
             #
             current_task = 'farm_tacet'
             self.info_set('current task', current_task)
@@ -181,23 +186,6 @@ class DailyTask2(TacetTask2, ForgeryTask2, SimulationTask2):
             if not self.config.get('Exit with Error', True):
                 raise e
 
-    def go_to_tower(self):
-        self.log_info('go to tower')
-        self.ensure_main(time_out=80)
-        gray_book_weekly = self.openF2Book(Labels.gray_book_weekly)
-        if not gray_book_weekly:
-            self.log_error('go_to_tower can not find gray_book_weekly')
-            return
-        self.click_box(gray_book_weekly, after_sleep=1)
-        btn = self.find_one(Labels.boss_proceed, box=self.box_of_screen(0.94, 0.3, 0.97, 0.41), threshold=0.8)
-        if btn is None:
-            self.ensure_main(time_out=10)
-            return
-        self.click_box(btn, after_sleep=1)
-        self.wait_click_travel()
-        self.wait_in_team_and_world(time_out=120)
-        self.sleep(1)
-
     def claim_battle_pass(self):
         self.log_info('battle pass')
         self.send_key_down('alt')
@@ -222,7 +210,7 @@ class DailyTask2(TacetTask2, ForgeryTask2, SimulationTask2):
         self.click_box(gray_book_quest, after_sleep=1.5)
         progress = self.ocr(0.1, 0.1, 0.5, 0.75, match=re.compile(r'^(\d+)/180$'))
         if not progress:
-            self.click(0.961, 0.6, after_sleep=1)
+            self.click(0.974, 0.6, after_sleep=1)
             progress = self.ocr(0.1, 0.1, 0.5, 0.75, match=re.compile(r'^(\d+)/180$'))
         if progress:
             current = int(progress[0].name.split('/')[0])
@@ -234,7 +222,10 @@ class DailyTask2(TacetTask2, ForgeryTask2, SimulationTask2):
     def get_total_daily_points(self):
         points_boxes = self.ocr(0.19, 0.8, 0.30, 0.93, match=number_re)
         if points_boxes:
-            points = int(points_boxes[0].name)
+            try:
+                points = int(re.sub(r'\D', '', points_boxes[0].name))
+            except Exception:
+                points = 0
         else:
             points = 0
         self.info_set('total daily points', points)
@@ -269,7 +260,6 @@ class DailyTask2(TacetTask2, ForgeryTask2, SimulationTask2):
         self.click(0.64, 0.95, after_sleep=1)
         self.click(0.14, 0.9, after_sleep=1)
         self.ensure_main(time_out=10)
-
 
 
 from ok import run_task
