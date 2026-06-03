@@ -21,7 +21,9 @@ msgstr "自动游戏快捷键与软件设置中不一致! 请检查是否正确�
 msgid "Can not switch to levitator please ensure you have equipped echos!"
 msgstr "无法切换工具栏到控物, 请确保已经装备主声骸, 并工具栏切换为控物!"
 
-msgid "(1-6) Important, Choose which level to farm, lower levels might not produce a echo"
+msgid ""
+"(1-6) Important, Choose which level to farm, lower levels might not produce "
+"a echo"
 msgstr "(1-6) 重要, 选择你对应世界等级可以产出声骸的难度, 从上到下为1-6"
 
 msgid "Boss1"
@@ -48,8 +50,8 @@ msgstr "刷副本Boss声骸"
 msgid "Farm World Boss(May need to drop waypoint on Boss)"
 msgstr "刷大世界4C Boss声骸(有些boss需要在boss上放信标)"
 
-msgid "Game Hotkey Config"
-msgstr "游戏快捷键设置"
+msgid "Game Hotkey"
+msgstr "游戏快捷键"
 
 msgid "In Game Hotkey for Skills"
 msgstr "声骸, 共鸣技能, 共鸣解放"
@@ -63,7 +65,9 @@ msgstr "共鸣解放快捷键(默认r)"
 msgid "Auto Target"
 msgstr "自动选取敌人"
 
-msgid "Turn off to enable auto combat only when manually target enemy using middle click"
+msgid ""
+"Turn off to enable auto combat only when manually target enemy using middle "
+"click"
 msgstr "关闭时仅在手动鼠标中键选取敌人后才会自动战斗"
 
 msgid "Repeat Farm Count"
@@ -192,10 +196,12 @@ msgstr "小月卡设置"
 msgid "Monthly Card Time"
 msgstr "月卡时间"
 
-msgid "Your computer's local time when the monthly card will popup, hour in (1-24)"
+msgid ""
+"Your computer's local time when the monthly card will popup, hour in (1-24)"
 msgstr "几点会弹出月卡提示, 本地计算机时间(1-24)"
 
-msgid "must be in game world and in teams, please check you game resolution is 16:9"
+msgid ""
+"must be in game world and in teams, please check you game resolution is 16:9"
 msgstr "必须在大世界队伍中, 请点击截图测试,检查游戏分辨率是否是16:9"
 
 msgid "Capture Frame Count"
@@ -240,7 +246,9 @@ msgstr "否"
 msgid "True"
 msgstr "是"
 
-msgid "Can't load game hotkey, please equip echos for all characters and use A-Z as hotkeys for skills, detected key:{}"
+msgid ""
+"Can't load game hotkey, please equip echos for all characters and use A-Z as"
+" hotkeys for skills, detected key:{}"
 msgstr "检测技能快捷键失败{},请确认已装备声骸,并且使用A-Z字母为游戏快捷键,如果确认无误依然报错,配置关闭快捷键检测."
 
 msgid "Tool Key"
@@ -312,7 +320,9 @@ msgstr "罗蕾莱"
 msgid "click f2 to open the book"
 msgstr "点击F2打开书"
 
-msgid "Check configs to keep, click start in game world, must be in a 16:9 screen ratio"
+msgid ""
+"Check configs to keep, click start in game world, must be in a 16:9 screen "
+"ratio"
 msgstr "必须16:9分辨率, 没有勾选的都会标记为弃置, 大世界启动"
 
 msgid "Boss"
@@ -435,10 +445,15 @@ msgstr "自动合成声骸"
 msgid "Data Merge Completed!"
 msgstr "自动合成声骸完成!"
 
-msgid "Auto combat error: Make sure you're equipping echos and turn off effect that changes the game color, (Game Gammar/Nvidia AMD Game Filter), turn off Motion Blur in game video options"
+msgid ""
+"Auto combat error: Make sure you're equipping echos and turn off effect that"
+" changes the game color, (Game Gammar/Nvidia AMD Game Filter), turn off "
+"Motion Blur in game video options"
 msgstr "自动战斗错误:请确认已装备声骸,关闭运动模糊,游戏为默认亮度,并关闭夜灯模式/显示器高级色彩/显卡滤镜等一切改变游戏颜色的配置."
 
-msgid "Auto combat error: Make sure to turn off effect that changes the game color, (Game Gammar/Nvidia AMD Game Filter/HDR)"
+msgid ""
+"Auto combat error: Make sure to turn off effect that changes the game color,"
+" (Game Gammar/Nvidia AMD Game Filter/HDR)"
 msgstr "自动战斗错误:请设置游戏为默认亮度,并关闭夜灯模式/显示器高级色彩/显卡滤镜/HDR等一切改变游戏颜色的配置."
 
 msgid "Auto Login"
@@ -468,7 +483,9 @@ msgstr "日常一条龙"
 msgid "Dreamless"
 msgstr "无妄者"
 
-msgid "Farms the selected Tacet Suppression, until no stamina. Must be able to teleport (F2)."
+msgid ""
+"Farms the selected Tacet Suppression, until no stamina. Must be able to "
+"teleport (F2)."
 msgstr "刷选定的无音区, 直到没有体力, 需要可传送"
 
 msgid "Login, claim monthly card, farm echo, and claim daily reward"
@@ -516,7 +533,9 @@ msgstr "战斗后自动拾取声骸"
 msgid "Farm Map with Star Path"
 msgstr "标记寻路刷大地图"
 
-msgid "Farm world map with a marked path of stars (diamond as the starting point), start in the map screen"
+msgid ""
+"Farm world map with a marked path of stars (diamond as the starting point), "
+"start in the map screen"
 msgstr "刷用星星标记的路径, 钻石作为起点, 在大地图界面开始, 工具使用钩锁."
 
 msgid "Stars"
@@ -594,7 +613,8 @@ msgstr "凝素领域刷取次数（每次消耗40体力），设置较大的数�
 msgid "Simulation Challenge"
 msgstr "模拟领域"
 
-msgid "Farms the selected Simulation Challenge. Must be able to teleport (F2)."
+msgid ""
+"Farms the selected Simulation Challenge. Must be able to teleport (F2)."
 msgstr "需要「黎那汐塔-角斗士的肖像」可传送"
 
 msgid "Material Selection"
@@ -627,7 +647,8 @@ msgstr "F2列表中第几个凝素领域"
 msgid "not enough stamina"
 msgstr "体力不足"
 
-msgid "Click skill failed, check if the keybinding is correct in ok-ww settings!"
+msgid ""
+"Click skill failed, check if the keybinding is correct in ok-ww settings!"
 msgstr "释放技能失败, 请检查ok-ww按键设置是正确!"
 
 msgid "Change Time to Night"
@@ -834,7 +855,9 @@ msgstr "已确认选中账号：{account}"
 msgid "Account display does not match, retrying ({attempt}/{max_retries})"
 msgstr "账号显示不匹配，重试（{attempt}/{max_retries}）"
 
-msgid "Account selection failed after {max_retries} retries; {account} is still not displayed. Continuing login attempt"
+msgid ""
+"Account selection failed after {max_retries} retries; {account} is still not"
+" displayed. Continuing login attempt"
 msgstr "账号选择失败，已重试 {max_retries} 次仍未显示 {account}，继续尝试登录"
 
 msgid "Failed to switch account"
@@ -876,4 +899,126 @@ msgstr "例如德尼亚，从上到下，从1开始"
 msgid "For Example, Nameless Explorer, From Top to Bottom, Starting with 1"
 msgstr "例如无铭探索者，从上到下，从1开始"
 
+msgid "Characters"
+msgstr "角色"
 
+msgid "Character Code"
+msgstr "角色代码"
+
+msgid "Use built in"
+msgstr "使用内置"
+
+msgid "Use custom"
+msgstr "使用自定义"
+
+msgid "Ask AI"
+msgstr "询问 AI"
+
+msgid "How To"
+msgstr "使用说明"
+
+msgid "Save"
+msgstr "保存"
+
+msgid "Custom code saved"
+msgstr "已保存自定义代码"
+
+msgid "Unsaved changes"
+msgstr "未保存的更改"
+
+msgid "Unsaved Changes"
+msgstr "未保存的更改"
+
+msgid "Discard unsaved character code changes?"
+msgstr "放弃未保存的角色代码更改吗？"
+
+msgid "Saved and reloaded"
+msgstr "已保存并重新加载"
+
+msgid "Custom character code saved and reloaded."
+msgstr "已保存并重新加载自定义角色代码。"
+
+msgid "Custom character code saved and reloaded for loaded characters."
+msgstr "已保存自定义角色代码，并已为已加载角色重新加载。"
+
+msgid "Success"
+msgstr "成功"
+
+msgid "Using built in code"
+msgstr "正在使用内置代码"
+
+msgid "Built in character code selected."
+msgstr "已选择内置角色代码。"
+
+msgid "Error"
+msgstr "错误"
+
+msgid "Ask AI template copied. Paste it into an AI chatbot."
+msgstr "AI 提示模板已复制。请粘贴到 AI 聊天机器人中。"
+
+msgid "Copied"
+msgstr "已复制"
+
+msgid ""
+"Choose Use custom to edit a character's Python code. Use built-in mode to read and select the original code.\n"
+"\n"
+"Ask AI copies a prompt to the clipboard with the full current code at the top. Paste it into an AI chatbot, describe the change after 'I want to implement:', and ask it to return the full modified code.\n"
+"\n"
+"Paste the returned code back into this editor, review the highlighted changed lines, then click Save to apply changes."
+msgstr ""
+"选择使用自定义来编辑角色的 Python 代码。内置模式可阅读和选择原始代码。\n"
+"\n"
+"询问 AI 会将一个提示词复制到剪贴板，提示词顶部包含当前完整代码。将其粘贴到 AI 聊天机器人中，在 'I want to implement:' 后描述你想修改的内容，并要求它返回完整修改后的代码。\n"
+"\n"
+"将返回的代码粘贴回此编辑器，检查高亮的变更行，然后点击保存以应用更改。"
+
+msgid "How To Modify Character Code"
+msgstr "如何修改角色代码"
+
+msgid "Reset"
+msgstr "重置"
+
+msgid "Reset Custom Code"
+msgstr "重置自定义代码"
+
+msgid "Reset this character to built in code and remove the custom code?"
+msgstr "将此角色重置为内置代码并移除自定义代码吗？"
+
+msgid ""
+"Custom code matches built in code. Removed custom code and switched to built"
+" in."
+msgstr "自定义代码与内置代码相同。已移除自定义代码并切换到内置。"
+
+msgid ""
+"Custom code matches built in code. Removed custom code, switched to built "
+"in, and reloaded loaded characters."
+msgstr "自定义代码与内置代码相同。已移除自定义代码，切换到内置，并重新加载已加载角色。"
+
+msgid "Custom code reset to built in code."
+msgstr "自定义代码已重置为内置代码。"
+
+msgid "Custom code reset to built in code and reloaded for loaded characters."
+msgstr "自定义代码已重置为内置代码，并已为已加载角色重新加载。"
+
+msgid "Contribute Code"
+msgstr "贡献代码"
+
+msgid "I want to implement:"
+msgstr "我想实现："
+
+msgid "Please modify the full {class_name} character automation code above."
+msgstr "请修改上面完整的 {class_name} 角色自动化代码。"
+
+msgid ""
+"Return only the complete modified Python code for the whole file, not a "
+"patch and not an explanation."
+msgstr "只返回整个文件完整修改后的 Python 代码，不要返回补丁或解释。"
+
+msgid ""
+"Keep the class name as {class_name}. Preserve imports that are still needed."
+msgstr "保持类名为 {class_name}。保留仍然需要的 import。"
+
+msgid ""
+"Use this BaseChar reference while reasoning about helper methods, task APIs,"
+" state, switching, cooldowns, and combat flow:"
+msgstr "在思考辅助方法、任务 API、状态、切人、冷却和战斗流程时，请使用这个 BaseChar 参考："
