@@ -1,3 +1,5 @@
+import datetime
+
 from qfluentwidgets import FluentIcon
 
 from ok import Logger
@@ -70,6 +72,7 @@ class TacetTask(WWOneTimeTask, BaseCombatTask):
             self.open_boss_book('wuyin')
             index = config.get('Which Tacet Suppression to Farm', 1) - 1
             self.teleport_to_tacet(index)
+            self.screenshot(f'{datetime.now().strftime('%Y%m%d_%H%M%S')}_ForgeryTask_TeleportToTacet_SN_{index + 1}')
             self.wait_click_travel()
             self.wait_in_team_and_world(time_out=120)
             self.sleep(2)

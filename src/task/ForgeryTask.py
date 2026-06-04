@@ -1,4 +1,5 @@
 import cv2
+import datetime
 
 from qfluentwidgets import FluentIcon
 
@@ -65,6 +66,7 @@ class ForgeryTask(DomainTask):
         if serial_number > self.total_number:
             raise IndexError(f'Index out of range, max is {self.total_number}')
         self.click_on_book_target(serial_number, self.total_number)
+        self.screenshot(f'{datetime.now().strftime('%Y%m%d_%H%M%S')}_ForgeryTask_TeleportIntoDomain_SN_{serial_number}')
         # if daily:
         #     self.get_material_mat()
         self.wait_click_travel()
