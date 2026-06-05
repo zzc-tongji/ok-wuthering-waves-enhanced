@@ -1070,13 +1070,15 @@ class BaseWWTask(BaseTask):
             proceed_box_y1 = bottom_proceed_box_y1
             proceed_box_y2 = bottom_proceed_box_y2
 
-        self.screenshot(f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_BaseWWTask_ClickOnBookTarget_SN_{serial_number}_Y_{proceed_box_y1}_{proceed_box_y2}_double_{double}")
-
         btns = self.find_feature('boss_proceed',
                                  box=self.box_of_screen(0.94, proceed_box_y1, 0.97, proceed_box_y2),
                                  threshold=0.8)
         if not bool(btns):
             raise Exception("can't find boss_proceed")
+
+        self.draw_boxes("find_go_button", self.box_of_screen(0.94, proceed_box_y1, 0.97, proceed_box_y2))
+        self.screenshot(f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_BaseWWTask_ClickOnBookTarget_SN_{serial_number}_Y_{proceed_box_y1.toFixed(2)}_{proceed_box_y2.toFixed(2)}", show_box=True)
+
         btn = max(btns, key=lambda box: box.y)
         self.click_box(btn.copy(x_offset=-btn.width * 2), after_sleep=1)
         self.wait_feature(['fast_travel_custom', 'gray_teleport', 'remove_custom'], time_out=10, settle_time=0.5)
