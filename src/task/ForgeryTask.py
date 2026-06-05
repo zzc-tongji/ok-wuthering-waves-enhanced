@@ -1,6 +1,6 @@
 import cv2
-import datetime
 
+from datetime import datetime
 from qfluentwidgets import FluentIcon
 
 from ok import Logger, find_color_rectangles
