@@ -2,8 +2,10 @@ name: Build Windows Executable (ok-ww-e)
 
 on:
   push:
+    # Sequence of patterns matched against refs/tags
     tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+.[0-9]+'
+      # format as "v3.3.80-rc.0" (worked for pyappify-action >=1.1.0)
+      - 'v[0-9]+.[0-9]+.[0-9]+-rc.[0-9]+'
   workflow_dispatch:
 
 jobs:
@@ -24,8 +26,8 @@ jobs:
           [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
           git config --global core.autocrlf false
           git config --global core.eol lf
-          git config --global user.email "20331014+zzc-tongji@users.noreply.github.com"
-          git config --global user.name "Zhicheng Zhang"
+          git config --global user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
+          git config --global user.name "${{ github.actor }}"
           echo "action_state=yellow" >> $env:GITHUB_ENV
           echo "${{ env.action_state }}"
 
@@ -75,8 +77,8 @@ jobs:
           }
 
       - name: Sync Repositories
-        id: sync
-        uses: ok-oldking/partial-sync-repo@master
+        id: sync   # Give the step an ID to access its outputs
+        uses: ok-oldking/partial-sync-repo@master # Replace with your action path
         with:
           repos: |
             https://${{ github.repository_owner }}:${{ secrets._GITHUB_TOKEN }}@github.com/${{ github.repository_owner }}/ok-ww-e
