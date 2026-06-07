@@ -5,12 +5,11 @@ import traceback
 from qfluentwidgets import FluentIcon
 
 from ok import Logger
-from src.Labels import Labels
 from src.task.BaseWWTask import number_re
-from src.task.TacetTask2 import TacetTask2
 from src.task.ForgeryTask2 import ForgeryTask2
-from src.task.SimulationTask2 import SimulationTask2
 from src.task.NightmareNestTask import NightmareNestTask
+from src.task.TacetTask2 import TacetTask2
+from src.task.SimulationTask2 import SimulationTask2
 from src.task.WWOneTimeTask import WWOneTimeTask
 
 logger = Logger.get_logger(__name__)
@@ -237,8 +236,9 @@ class DailyTask2(TacetTask2, ForgeryTask2, SimulationTask2):
         if total_points < 100:
             self.ensure_main(time_out=5)
             self.open_daily()
+            self.sleep(1)
             self.log_info('claim pending daily quest rewards before claiming daily chest')
-            self.click(0.87, 0.17, after_sleep=0.5)
+            self.click(0.87, 0.18, after_sleep=0.5)
             self.sleep(1)
             total_points = self.get_total_daily_points()
 
