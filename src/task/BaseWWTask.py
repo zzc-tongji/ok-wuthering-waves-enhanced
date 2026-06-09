@@ -934,27 +934,29 @@ class BaseWWTask(BaseTask):
         self.send_key_up('alt')
         self.sleep(0.5)
 
-    def open_boss_book(self, name, after_sleep=1):
+    def open_boss_book(self, name, after_sleep=2):
         self.log_info(f'open_boss_book {name}')
         x = 0.24
         self.sleep(0.4)
-        if name == 'wuyin':
-            y = 0.49
-        elif name == 'canxiang':
-            y = 0.81
-        elif name == 'zhange':
-            y = 0.6
-        elif name == 'mengyan':
-            y = 0.7
-        elif name == 'moni':
+        if name == 'ningsu':
             y = 0.28
-        elif name == 'canxiang':
-            y = 0.81
-        elif name == 'qiangdi':
+        elif name == 'moni':
             y = 0.39
+        elif name == 'qiangdi':
+            y = 0.49
+        elif name == 'wuyin':
+            y = 0.6
+        elif name == 'zhange':
+            y = 0.7
+        elif name == 'mengyan':
+            y = 0.81
+        elif name == 'canxiang':
+            # 点击滚轮翻页
+            for _ in range(3):
+                self.click_relative(685 / 1920, 955 / 1080, after_sleep=after_sleep)
+            y = 0.81
         else:
             raise Exception(f'unknown_lang {name}')
-
         self.click_relative(x, y, after_sleep=after_sleep, name=name)
 
     def openF2Book(self, feature="gray_book_all_monsters", opened=False):
@@ -1092,24 +1094,6 @@ class BaseWWTask(BaseTask):
 
     def jump(self, after_sleep=0.01):
         self.send_key(self.key_config.get('Jump Key'), after_sleep=after_sleep)
-
-    def go_to_tower(self, opened=False):
-        self.log_info('go to tower')
-        if not opened:
-            self.ensure_main(time_out=80)
-        gray_book_weekly = self.openF2Book(Labels.gray_book_weekly, opened=opened)
-        if not gray_book_weekly:
-            self.log_error('go_to_tower can not find gray_book_weekly')
-            return
-        self.click_box(gray_book_weekly, after_sleep=3)
-        btn = self.find_one(Labels.boss_proceed, box=self.box_of_screen(0.91, 0.3, 0.95, 0.41), threshold=0.8)
-        if btn is None:
-            self.ensure_main(time_out=20)
-            return
-        self.click_box(btn, after_sleep=1)
-        self.wait_click_travel()
-        self.wait_in_team_and_world(time_out=120)
-        self.sleep(1)
 
 
 book_bar_color = {
