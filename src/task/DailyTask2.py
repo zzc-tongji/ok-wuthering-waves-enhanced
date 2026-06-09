@@ -11,11 +11,12 @@ from src.task.NightmareNestTask import NightmareNestTask
 from src.task.TacetTask2 import TacetTask2
 from src.task.SimulationTask2 import SimulationTask2
 from src.task.WWOneTimeTask import WWOneTimeTask
+from src.task.BaseCombatTask import BaseCombatTask
 
 logger = Logger.get_logger(__name__)
 
 
-class DailyTask2(TacetTask2, ForgeryTask2, SimulationTask2):
+class DailyTask2(WWOneTimeTask, BaseCombatTask):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -25,7 +26,6 @@ class DailyTask2(TacetTask2, ForgeryTask2, SimulationTask2):
         self.icon = FluentIcon.CAR
         self.support_schedule_task = True
         self.default_config = {
-            'Teleport Timeout': 10,
             'Which Tacet Suppression to Farm': 1,  # starts with 1
             'Tacet Suppression Count': 0,
             'Which Forgery Challenge to Farm': 1,  # starts with 1
@@ -38,7 +38,6 @@ class DailyTask2(TacetTask2, ForgeryTask2, SimulationTask2):
             'Exit with Error': True,
         }
         self.config_description = {
-            'Teleport Timeout': 'the timeout of second for teleport',
             'Which Tacet Suppression to Farm': 'The Tacet Suppression number in the F2 list.',
             'Tacet Suppression Count': 'farm Tacet Suppression N time(s), 60 stamina per time, set a large number to use all stamina',
             'Which Forgery Challenge to Farm': 'The Forgery Challenge number in the F2 list.',
@@ -60,7 +59,6 @@ class DailyTask2(TacetTask2, ForgeryTask2, SimulationTask2):
         self.description = 'open game, login, monthly card, mail, farm, activity, radio'
 
     def run(self):
-        self.teleport_timeout = self.config.get('Teleport Timeout', 10)
         try:
             #
             current_task = 'login_with_hot_update'
@@ -68,121 +66,126 @@ class DailyTask2(TacetTask2, ForgeryTask2, SimulationTask2):
             WWOneTimeTask.run(self)
             self._logged_in = False
             self.ensure_main(time_out=180)
-            self.go_to_tower()
             #
-            current_task = 'claim_mail'
-            self.info_set('current task', current_task)
-            for i in range(1, self.config.get('Task Retry') + 1):
-                try:
-                    self.ensure_main(time_out=self.teleport_timeout)
-                    self.claim_mail()
-                    break
-                except Exception as e:
-                        self.log_error(f'claim mail attempt "{i}" failed\n{''.join(traceback.format_exception(e))}')
-                        self.screenshot(f'{datetime.now().strftime("%Y%m%d")}_DailyTask2_ClaimMail_Attempt_{i}')
-                        self.make_sure_in_world()
-                        if (i >= self.config.get('Task Retry')):
-                            self.log_error("邮件 任务未完成，需要手动登陆游戏处理。", notify=True)
-            #
+            _, daily_reward_ready = self.open_daily()
+            self.ensure_main()
             nightmare_all = self.config.get('Auto Farm all Nightmare Nest')
-            nightmare_once = self.config.get('Farm Nightmare Nest for Daily Echo') and (self.config.get('Tacet Suppression Count') + self.config.get('Forgery Challenge Count') > 0)
+            nightmare_once = self.config.get('Farm Nightmare Nest for Daily Echo') and (not daily_reward_ready) and self.config.get('Tacet Suppression Count') <= 0
+            current_task = 'nightmare_all' if nightmare_all else 'nightmare_once'
+            self.info_set('current task', current_task)
             if nightmare_all or nightmare_once:
-                current_task = 'nightmare_all' if nightmare_all else 'nightmare_once'
-                self.info_set('current task', current_task)
-                self.log_debug('Auto Farm all Nightmare Nest') if nightmare_all else self.log_debug('Farm Nightmare Nest for Daily Echo')
+                self.log_info('farming ALL nightmare nests ...') if nightmare_all else self.log_info('farming ONE nightmare nest ...')
                 for i in range(1, self.config.get('Task Retry') + 1):
                     try:
-                        self.info_set('nightmare nest attempt', i)
-                        self.ensure_main(time_out=self.teleport_timeout)
                         # 劫持 NightmareNestTask.ensure_main 避免梦魇打完关书
                         self.get_task_by_class(NightmareNestTask).ensure_main = lambda *args, **kwargs: None
+                        self.info_set('nightmare nest attempt', i)
+                        self.ensure_main()
                         self.run_task_by_class(NightmareNestTask) if nightmare_all else self.get_task_by_class(NightmareNestTask).run_capture_mode()
+                        self.log_info('nightmare nest(s) farmed')
                         break
                     except Exception as e:
                         self.log_error(f'nightmare nest attempt "{i}" failed\n{''.join(traceback.format_exception(e))}')
                         self.screenshot(f'{datetime.now().strftime("%Y%m%d")}_DailyTask2_NightmareNest_Attempt_{i}')
-                        self.make_sure_in_world()
+                        self.ensure_main()
                         if (i >= self.config.get('Task Retry')):
                             self.log_error("梦魇祓除/残像聚落 任务未完成，需要手动登陆游戏处理。", notify=True)
                     finally:
                         # 还原 ensure_main，防范实例状态污染
                         self.get_task_by_class(NightmareNestTask).__dict__.pop('ensure_main', None)
+            else:
+                self.log_info('NO NEED to farm nightmare nest(s), skipped')
             #
             current_task = 'farm_tacet'
             self.info_set('current task', current_task)
-            self.tacet_serial_number = self.config.get('Which Tacet Suppression to Farm', 1)
-            self.stamina_once = 60
             for i in range(1, self.config.get('Task Retry') + 1):
                 try:
                     self.info_set('farm tacet attempt', i)
-                    self.ensure_main(time_out=self.teleport_timeout)
-                    self.get_task_by_class(TacetTask2).farm_tacet()
+                    self.get_task_by_class(TacetTask2).farm_tacet(config=self.config)
                     break
                 except Exception as e:
-                    self.log_error(f'farm tacet "{self.tacet_serial_number}" as attempt "{i}" failed\n{''.join(traceback.format_exception(e))}')
-                    self.screenshot(f'{datetime.now().strftime("%Y%m%d")}_DailyTask2_Tacet_Attempt_{i}_TacetSerialNumber_{self.tacet_serial_number}')
-                    self.make_sure_in_world()
-                    # retry next tacet
+                    self.log_error(f'farm tacet attempt "{i}" failed\n{''.join(traceback.format_exception(e))}')
+                    self.screenshot(f'{datetime.now().strftime("%Y%m%d")}_DailyTask2_Tacet_Attempt_{i}')
                     if (i >= self.config.get('Task Retry')):
                         raise e
-                    self.tacet_serial_number = (self.tacet_serial_number % self.get_task_by_class(TacetTask2).total_number) + 1
             #
             current_task = 'farm_forgery'
             self.info_set('current task', current_task)
-            self.stamina_once = 40
             for i in range(1, self.config.get('Task Retry') + 1):
                 try:
                     self.info_set('farm forgery attempt', i)
-                    self.make_sure_in_world()
-                    self.get_task_by_class(ForgeryTask2).farm_forgery()
+                    self.get_task_by_class(ForgeryTask2).farm_forgery(config=self.config)
                     break
                 except Exception as e:
                     self.log_error(f'farm forgery attempt "{i}" failed\n{''.join(traceback.format_exception(e))}')
                     self.screenshot(f'{datetime.now().strftime("%Y%m%d")}_DailyTask2_Forgery_Attempt_{i}')
-                    self.make_sure_in_world()
                     if (i >= self.config.get('Task Retry')):
                         raise e
             #
             current_task = 'farm_simulation'
             self.info_set('current task', current_task)
-            self.stamina_once = 40
             for i in range(1, self.config.get('Task Retry') + 1):
                 try:
                     self.info_set('farm simulation attempt', i)
-                    self.make_sure_in_world()
-                    self.get_task_by_class(SimulationTask2).farm_simulation()
+                    self.get_task_by_class(SimulationTask2).farm_simulation(config=self.config)
                     break
                 except Exception as e:
                     self.log_error(f'farm simulation attempt "{i}" failed\n{''.join(traceback.format_exception(e))}')
                     self.screenshot(f'{datetime.now().strftime("%Y%m%d")}_DailyTask2_Simulation_Attempt_{i}')
-                    self.make_sure_in_world()
                     if (i >= self.config.get('Task Retry')):
                         raise e
             #
             current_task = 'claim_daily'
             self.info_set('current task', current_task)
-            self.ensure_main(time_out=self.teleport_timeout)
-            self.claim_daily()
+            for i in range(1, self.config.get('Task Retry') + 1):
+                try:
+                    self.ensure_main()
+                    self.claim_daily()
+                    self.sleep(1)
+                    break
+                except Exception as e:
+                    self.log_error(f'claim daily attempt "{i}" failed\n{''.join(traceback.format_exception(e))}')
+                    self.screenshot(f'{datetime.now().strftime("%Y%m%d")}_DailyTask2_ClaimDaily_Attempt_{i}')
+                    self.ensure_main()
+                    if (i >= self.config.get('Task Retry')):
+                        self.log_error("未能领取 每日奖励，需要手动登陆游戏处理。", notify=True)
+            #
+            current_task = 'claim_mail'
+            self.info_set('current task', current_task)
+            for i in range(1, self.config.get('Task Retry') + 1):
+                try:
+                    self.ensure_main()
+                    self.claim_mail()
+                    self.sleep(1)
+                    break
+                except Exception as e:
+                    self.log_error(f'claim mail attempt "{i}" failed\n{''.join(traceback.format_exception(e))}')
+                    self.screenshot(f'{datetime.now().strftime("%Y%m%d")}_DailyTask2_ClaimMail_Attempt_{i}')
+                    self.ensure_main()
+                    if (i >= self.config.get('Task Retry')):
+                        self.log_error("未能领取 邮件奖励，需要手动登陆游戏处理。", notify=True)
             #
             current_task = 'claim_millage'
             self.info_set('current task', current_task)
-            self.ensure_main(time_out=self.teleport_timeout)
-            self.claim_battle_pass()
+            self.ensure_main()
+            for i in range(1, self.config.get('Task Retry') + 1):
+                try:
+                    self.ensure_main()
+                    self.claim_battle_pass()
+                    self.sleep(1)
+                    break
+                except Exception as e:
+                    self.log_error(f'claim millage attempt "{i}" failed\n{''.join(traceback.format_exception(e))}')
+                    self.screenshot(f'{datetime.now().strftime("%Y%m%d")}_DailyTask2_ClaimBattlePass_Attempt_{i}')
+                    self.ensure_main()
+                    if (i >= self.config.get('Task Retry')):
+                        self.log_error("未能领取 版本奖励，需要手动登陆游戏处理。", notify=True)
             #
         except Exception as e:
             self.log_error(f'一条龙错误 | {current_task} | {str(e)}\n{''.join(traceback.format_exception(e))}')
             self.screenshot(f'{datetime.now().strftime("%Y%m%d")}_DailyTask2_Error')
             #
-            try:
-                self.make_sure_in_world()
-                current_task = 'claim_daily_when_exception_catched'
-                self.info_set('current task', current_task)
-                self.ensure_main(time_out=self.teleport_timeout)
-                self.claim_daily()
-            except:
-                pass
-            #
-            if not self.config.get('Exit with Error', True):
+            if not self.config.get('Exit with Error'):
                 raise e
 
     def claim_battle_pass(self):
@@ -266,4 +269,4 @@ from ok import run_task
 from config import config
 
 if __name__ == "__main__":
-    run_task(config, task=DailyTask2, debug=True) 
+    run_task(config, task=DailyTask2, debug=True)
