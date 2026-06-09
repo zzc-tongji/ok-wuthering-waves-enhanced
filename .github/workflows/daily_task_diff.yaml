@@ -15,7 +15,6 @@ jobs:
         with:
           ref: main
       - name: Check Files Existence
-        id: check_files
         run: |
           FILE1="src/task/DailyTask.py"
           FILE2="src/task/DailyTask2.py"
