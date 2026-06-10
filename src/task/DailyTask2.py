@@ -244,11 +244,10 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
         self.click(0.930, 0.882, after_sleep=1)
         self.ensure_main(time_out=10)
         #
-        self.openF2Book('gray_book_quest')
-        total_points = self.get_total_daily_points()
-        if total_points < 100:
+        _, daily_reward_ready = self.open_daily()
+        self.ensure_main()
+        if not daily_reward_ready:
             self.log_error("每日活跃度 任务未完成（可能因为体力不足），需要手动登陆游戏处理。", notify=True)
-        self.ensure_main(time_out=10)
 
     def claim_mail(self):
         self.info_set('current task', 'claim mail')
