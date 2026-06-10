@@ -66,8 +66,8 @@
           <path d="M6 9H3V7h3V4l5 4-5 4V9z m8-7v12c0 0.55-0.45 1-1 1H1c-0.55 0-1-0.45-1-1V2c0-0.55 0.45-1 1-1h12c0.55 0 1 0.45 1 1z m-1 0H1v12h12V2z"></path>
       </svg>      <a href="#d2h-939507" class="d2h-file-name">src/task/{DailyTask.py → DailyTask2.py}</a>
       <span class="d2h-file-stats">
-          <span class="d2h-lines-added">+164</span>
-          <span class="d2h-lines-deleted">-82</span>
+          <span class="d2h-lines-added">+169</span>
+          <span class="d2h-lines-deleted">-85</span>
       </span>
     </span>
 </li>
@@ -862,7 +862,7 @@
     <td class="d2h-del d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">-</span>
-            <span class="d2h-code-line-ctn"><del>        self._logged_in = False</del></span>
+            <span class="d2h-code-line-ctn"><del>        self.logged_in = False</del></span>
         </div>
     </td>
 </tr><tr>
@@ -2258,7 +2258,7 @@
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-info"></td>
     <td class="d2h-info">
-        <div class="d2h-code-side-line">@@ -164,10 +235,21 @@</div>
+        <div class="d2h-code-side-line">@@ -164,15 +235,28 @@</div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
@@ -2297,7 +2297,7 @@
     <td class="d2h-del d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">-</span>
-            <span class="d2h-code-line-ctn">        <del>if</del> <del>not</del> self.<del>find_one</del>(<del>&#x27;boss_proceed&#x27;, box=self.box_of_screen(0.803, 0.189, 0.960, 0.312</del>)<del>):</del></span>
+            <span class="d2h-code-line-ctn">        self.<del>openF2Book</del>(<del>&#x27;gray_book_quest&#x27;</del>)</span>
         </div>
     </td>
 </tr><tr>
@@ -2307,7 +2307,7 @@
     <td class="d2h-del d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">-</span>
-            <span class="d2h-code-line-ctn"><del>            self.log_info(&#x27;no_boss_proceed,</del> <del>click</del> <del>claim&#x27;)</del></span>
+            <span class="d2h-code-line-ctn">        if <del>not</del> <del>self.find_one(&#x27;boss_proceed&#x27;,</del> <del>box=self.box_of_screen(0.803, 0.189, 0.960, 0.312))</del>:</span>
         </div>
     </td>
 </tr><tr>
@@ -2317,7 +2317,7 @@
     <td class="d2h-del d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">-</span>
-            <span class="d2h-code-line-ctn">            self.<del>click</del>(<del>0.881, 0.237, after_sleep</del>=<del>2</del>)</span>
+            <span class="d2h-code-line-ctn">            self.<del>log_info</del>(<del>&#x27;no_boss_proceed, click claim&#x27;</del>)</span>
         </div>
     </td>
 </tr><tr>
@@ -2327,37 +2327,37 @@
     <td class="d2h-del d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">-</span>
-            <span class="d2h-code-line-ctn"><del>        </del>self.<del>click_daily_reward_box</del>(<del>100</del>)</span>
+            <span class="d2h-code-line-ctn">            <del># Click [Guidebook] in [Terminal] interface</del></span>
         </div>
     </td>
 </tr><tr>
-    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
-      
+    <td class="d2h-code-side-linenumber d2h-del d2h-change">
+      171
     </td>
-    <td class="d2h-cntx d2h-emptyplaceholder">
-        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
+    <td class="d2h-del d2h-change">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">-</span>
+            <span class="d2h-code-line-ctn">            self.<del>click</del>(<del>0.885, 0.250, after_sleep=2</del>)</span>
         </div>
     </td>
 </tr><tr>
-    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
-      
+    <td class="d2h-code-side-linenumber d2h-del d2h-change">
+      172
     </td>
-    <td class="d2h-cntx d2h-emptyplaceholder">
-        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
+    <td class="d2h-del d2h-change">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">-</span>
+            <span class="d2h-code-line-ctn"><del>        </del>self.log_info(<del>f</del>&#x27;claim daily <del>reward</del> <del>via  coordinate</del>&#x27;)</span>
         </div>
     </td>
 </tr><tr>
-    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
-      
+    <td class="d2h-code-side-linenumber d2h-del d2h-change">
+      173
     </td>
-    <td class="d2h-cntx d2h-emptyplaceholder">
-        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
+    <td class="d2h-del d2h-change">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">-</span>
+            <span class="d2h-code-line-ctn"><del>        </del>self.click(0.<del>930</del>, 0.<del>882</del>, after_sleep=<del>1</del>)</span>
         </div>
     </td>
 </tr><tr>
@@ -2442,7 +2442,7 @@
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      171
+      174
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
@@ -2452,7 +2452,7 @@
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      172
+      175
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
@@ -2461,23 +2461,93 @@
         </div>
     </td>
 </tr><tr>
+    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
+      
+    </td>
+    <td class="d2h-cntx d2h-emptyplaceholder">
+        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn"><br></span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
+      
+    </td>
+    <td class="d2h-cntx d2h-emptyplaceholder">
+        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn"><br></span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
+      
+    </td>
+    <td class="d2h-cntx d2h-emptyplaceholder">
+        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn"><br></span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
+      
+    </td>
+    <td class="d2h-cntx d2h-emptyplaceholder">
+        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn"><br></span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
+      
+    </td>
+    <td class="d2h-cntx d2h-emptyplaceholder">
+        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn"><br></span>
+        </div>
+    </td>
+</tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      173
+      176
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">    def click_daily_reward_box(self, reward_points):</span>
+            <span class="d2h-code-line-ctn">    def claim_mail(self):</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      177
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">        self.info_set(&#x27;current task&#x27;, &#x27;claim mail&#x27;)</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      178
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">        self.back(after_sleep=1.5)</span>
         </div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-info"></td>
     <td class="d2h-info">
-        <div class="d2h-code-side-line">@@ -187,4 +269,4 @@</div>
+        <div class="d2h-code-side-line">@@ -185,4 +269,4 @@</div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      187
+      185
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
@@ -2487,7 +2557,7 @@
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      188
+      186
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
@@ -2497,7 +2567,7 @@
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      189
+      187
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
@@ -2507,7 +2577,7 @@
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-del d2h-change">
-      190
+      188
     </td>
     <td class="d2h-del d2h-change">
         <div class="d2h-code-side-line">
@@ -4731,7 +4801,7 @@
     <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">        <ins>total_points</ins> <ins>=</ins> self.<ins>get_total_daily_points</ins>()</span>
+            <span class="d2h-code-line-ctn">        <ins>total_points = </ins>self.<ins>get_total_daily_points</ins>()</span>
         </div>
     </td>
 </tr><tr>
@@ -4741,7 +4811,7 @@
     <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn"><ins>        if</ins> <ins>total_points</ins> <ins>&lt; 100:</ins></span>
+            <span class="d2h-code-line-ctn">        if <ins>total_points</ins> <ins>&lt;</ins> <ins>100</ins>:</span>
         </div>
     </td>
 </tr><tr>
@@ -4751,7 +4821,7 @@
     <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">            self.<ins>ensure_main</ins>(<ins>time_out</ins>=<ins>5</ins>)</span>
+            <span class="d2h-code-line-ctn">            self.<ins>ensure_main</ins>(<ins>time_out=5</ins>)</span>
         </div>
     </td>
 </tr><tr>
@@ -4761,37 +4831,37 @@
     <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn"><ins>            </ins>self.<ins>open_daily</ins>()</span>
+            <span class="d2h-code-line-ctn">            <ins>self.open_daily()</ins></span>
         </div>
     </td>
 </tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
+    <td class="d2h-code-side-linenumber d2h-ins d2h-change">
       242
     </td>
-    <td class="d2h-ins">
+    <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">            self.sleep(1)</span>
+            <span class="d2h-code-line-ctn">            self.<ins>sleep</ins>(<ins>1</ins>)</span>
         </div>
     </td>
 </tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
+    <td class="d2h-code-side-linenumber d2h-ins d2h-change">
       243
     </td>
-    <td class="d2h-ins">
+    <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">            self.log_info(&#x27;claim pending daily quest rewards before claiming daily chest&#x27;)</span>
+            <span class="d2h-code-line-ctn"><ins>            </ins>self.log_info(&#x27;claim <ins>pending </ins>daily <ins>quest</ins> <ins>rewards before claiming daily chest</ins>&#x27;)</span>
         </div>
     </td>
 </tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
+    <td class="d2h-code-side-linenumber d2h-ins d2h-change">
       244
     </td>
-    <td class="d2h-ins">
+    <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">            self.click(0.87, 0.18, after_sleep=0.5)</span>
+            <span class="d2h-code-line-ctn"><ins>            </ins>self.click(0.<ins>87</ins>, 0.<ins>18</ins>, after_sleep=<ins>0.5</ins>)</span>
         </div>
     </td>
 </tr><tr>
@@ -4895,13 +4965,83 @@
         </div>
     </td>
 </tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
+    <td class="d2h-code-side-linenumber d2h-ins">
       255
+    </td>
+    <td class="d2h-ins">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">+</span>
+            <span class="d2h-code-line-ctn">    def click_daily_reward_box(self, reward_points):</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-ins">
+      256
+    </td>
+    <td class="d2h-ins">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">+</span>
+            <span class="d2h-code-line-ctn">        self.log_info(f&#x27;claim daily reward {reward_points} via fallback coordinate&#x27;)</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-ins">
+      257
+    </td>
+    <td class="d2h-ins">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">+</span>
+            <span class="d2h-code-line-ctn">        self.click(0.93, 0.88, after_sleep=1)</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-ins">
+      258
+    </td>
+    <td class="d2h-ins">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">+</span>
+            <span class="d2h-code-line-ctn">        return False</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-ins">
+      259
+    </td>
+    <td class="d2h-ins">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">+</span>
+            <span class="d2h-code-line-ctn"><br></span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      260
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">    def click_daily_reward_box(self, reward_points):</span>
+            <span class="d2h-code-line-ctn">    def claim_mail(self):</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      261
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">        self.info_set(&#x27;current task&#x27;, &#x27;claim mail&#x27;)</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      262
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">        self.back(after_sleep=1.5)</span>
         </div>
     </td>
 </tr><tr>
