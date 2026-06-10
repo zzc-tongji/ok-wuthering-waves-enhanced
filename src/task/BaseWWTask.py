@@ -1071,7 +1071,6 @@ class BaseWWTask(BaseTask):
         else:
             target = max(btns, key=lambda box: box.y)
         self.draw_boxes(boxes=target, color="red")
-        self.screenshot(f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_BaseWWTask_ClickOnBookTarget_SN_{serial_number}", show_box=True)
         self.click(target, after_sleep=1)
         self.wait_feature(['fast_travel_custom', 'gray_teleport', 'remove_custom'], time_out=10, settle_time=0.5)
 
