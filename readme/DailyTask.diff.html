@@ -66,7 +66,7 @@
           <path d="M6 9H3V7h3V4l5 4-5 4V9z m8-7v12c0 0.55-0.45 1-1 1H1c-0.55 0-1-0.45-1-1V2c0-0.55 0.45-1 1-1h12c0.55 0 1 0.45 1 1z m-1 0H1v12h12V2z"></path>
       </svg>      <a href="#d2h-939507" class="d2h-file-name">src/task/{DailyTask.py → DailyTask2.py}</a>
       <span class="d2h-file-stats">
-          <span class="d2h-lines-added">+155</span>
+          <span class="d2h-lines-added">+154</span>
           <span class="d2h-lines-deleted">-78</span>
       </span>
     </span>
@@ -2258,7 +2258,7 @@
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-info"></td>
     <td class="d2h-info">
-        <div class="d2h-code-side-line">@@ -172,6 +243,12 @@</div>
+        <div class="d2h-code-side-line">@@ -172,6 +243,11 @@</div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
@@ -2288,16 +2288,6 @@
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
             <span class="d2h-code-line-ctn">        self.ensure_main(time_out=10)</span>
-        </div>
-    </td>
-</tr><tr>
-    <td class="d2h-code-side-linenumber d2h-code-side-emptyplaceholder d2h-cntx d2h-emptyplaceholder">
-      
-    </td>
-    <td class="d2h-cntx d2h-emptyplaceholder">
-        <div class="d2h-code-side-line d2h-code-side-emptyplaceholder">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn"><br></span>
         </div>
     </td>
 </tr><tr>
@@ -2383,7 +2373,7 @@
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-info"></td>
     <td class="d2h-info">
-        <div class="d2h-code-side-line">@@ -185,4 +262,4 @@</div>
+        <div class="d2h-code-side-line">@@ -185,4 +261,4 @@</div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
@@ -4651,7 +4641,7 @@
     <td class="d2h-ins">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">        self.openF2Book(&#x27;gray_book_quest&#x27;)</span>
+            <span class="d2h-code-line-ctn">        _, daily_reward_ready = self.open_daily()</span>
         </div>
     </td>
 </tr><tr>
@@ -4661,7 +4651,7 @@
     <td class="d2h-ins">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">        total_points = self.get_total_daily_points()</span>
+            <span class="d2h-code-line-ctn">        self.ensure_main()</span>
         </div>
     </td>
 </tr><tr>
@@ -4671,7 +4661,7 @@
     <td class="d2h-ins">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">        if total_points &lt; 100:</span>
+            <span class="d2h-code-line-ctn">        if not daily_reward_ready:</span>
         </div>
     </td>
 </tr><tr>
@@ -4685,18 +4675,8 @@
         </div>
     </td>
 </tr><tr>
-    <td class="d2h-code-side-linenumber d2h-ins">
-      251
-    </td>
-    <td class="d2h-ins">
-        <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">        self.ensure_main(time_out=10)</span>
-        </div>
-    </td>
-</tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      252
+      251
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
@@ -4706,7 +4686,7 @@
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      253
+      252
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
@@ -4716,7 +4696,7 @@
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      254
+      253
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
@@ -4731,7 +4711,7 @@
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      262
+      261
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
@@ -4741,7 +4721,7 @@
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      263
+      262
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
@@ -4751,7 +4731,7 @@
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
-      264
+      263
     </td>
     <td class="d2h-cntx">
         <div class="d2h-code-side-line">
@@ -4761,7 +4741,7 @@
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-ins d2h-change">
-      265
+      264
     </td>
     <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
