@@ -19,19 +19,17 @@
 - 支持设置刷取次数：
   - 如不需要刷取，设 0 。如需刷完所有体力，设一个大数。
   - 刷取次数以1倍（最低）体力计算。支持2倍体力刷取副本（相应刷取次数记为2）。
-  - 代码变更报告：[use_stamina.diff.html](https://htmlpreview.github.io/?https://raw.githubusercontent.com/zzc-tongji/ok-ww-enhanced/refs/heads/main/readme/use_stamina.diff.html) 。
+  - 实现方式是注入 use_stamina 函数。这是注入前后的对比 [use_stamina.diff.html](https://htmlpreview.github.io/?https://raw.githubusercontent.com/zzc-tongji/ok-ww-enhanced/refs/heads/main/readme/use_stamina.diff.html) 。
 
 #### 新版一条龙任务
 
-- 采用新版体力任务（无音区、凝素领域、模拟领域）。
-- 支持设置重试次数：
-  - 重试次数对 *无音区、凝素领域、模拟领域、梦魇巢穴（梦魇祓除 和 残像聚落）* 有效。
-  - 若重试次数用尽也无法完成，则抛出异常并结束一条龙任务。
-- 在异常抛出点截图保存，方便查找原因。
+- 采用新版体力任务（无音区、凝素领域、模拟领域）。支持每种体力任务独立设置刷取次数（支持 跳过刷取 和 刷完所有体力）。
+- 支持设置重试次数（对每个任务分别生效）。若重试次数用尽也无法完成，则记录日志并 **截图**。
 - 日志文件 `./logs/ok-script.log` 优化：
   - 如果某些任务无法完成，会包含文本 `未完成`，以便后续处理（例如发送通知）。
   - 在出现异常的情况下，会包含文本 `一条龙错误` 和错误堆栈，以便后续处理。
 - 新版 [DailyTask2.py](./src/task/DailyTask2.py) 相比原版 [DailyTask.py](./src/task/DailyTask.py) 的改动：
+  - 相比原版，新版增加了任务重试、异常日志和异常截图。
   - 在出现异常的情况下：新版可以设置是否退出程序，原版不会退出程序。
   - 代码变更报告：[DailyTask.diff.html](https://htmlpreview.github.io/?https://raw.githubusercontent.com/zzc-tongji/ok-ww-enhanced/refs/heads/main/readme/DailyTask.diff.html) 。
 
