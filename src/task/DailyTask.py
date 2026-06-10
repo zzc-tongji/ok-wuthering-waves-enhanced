@@ -62,7 +62,7 @@ class DailyTask(WWOneTimeTask, BaseCombatTask):
 
     def run(self):
         WWOneTimeTask.run(self)
-        self._logged_in = False
+        self.logged_in = False
         self.ensure_main(time_out=180)
 
         condition1 = self.config.get('Auto Farm all Nightmare Nest')
@@ -164,16 +164,14 @@ class DailyTask(WWOneTimeTask, BaseCombatTask):
 
     def claim_daily(self):
         self.info_set('current task', 'claim daily')
+        self.openF2Book('gray_book_quest')
         if not self.find_one('boss_proceed', box=self.box_of_screen(0.803, 0.189, 0.960, 0.312)):
             self.log_info('no_boss_proceed, click claim')
-            self.click(0.881, 0.237, after_sleep=2)
-        self.click_daily_reward_box(100)
+            # Click [Guidebook] in [Terminal] interface
+            self.click(0.885, 0.250, after_sleep=2)
+        self.log_info(f'claim daily reward via  coordinate')
+        self.click(0.930, 0.882, after_sleep=1)
         self.ensure_main(time_out=10)
-
-    def click_daily_reward_box(self, reward_points):
-        self.log_info(f'claim daily reward {reward_points} via fallback coordinate')
-        self.click(0.93, 0.88, after_sleep=1)
-        return False
 
     def claim_mail(self):
         self.info_set('current task', 'claim mail')
