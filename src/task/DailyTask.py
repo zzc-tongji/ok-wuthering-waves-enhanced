@@ -6,6 +6,7 @@ from ok import Logger, TaskDisabledException
 from src.task.BaseWWTask import number_re
 from src.task.FarmEchoTask import FarmEchoTask
 from src.task.ForgeryTask import ForgeryTask
+from src.task.GardenTask import GardenTask
 from src.task.NightmareNestTask import NightmareNestTask
 from src.task.TacetTask import TacetTask
 from src.task.SimulationTask import SimulationTask
@@ -32,12 +33,17 @@ class DailyTask(WWOneTimeTask, BaseCombatTask):
             'Material Selection': 'Shell Credit',
             'Auto Farm all Nightmare Nest': False,
             'Farm Nightmare Nest for Daily Echo': True,
+            'Check Weekly Garden': True,
+            'Continue Farm After Daily': False,
         }
         self.config_description = {
             'Which Tacet Suppression to Farm': 'The Tacet Suppression number in the F2 list.',
             'Which Forgery Challenge to Farm': 'The Forgery Challenge number in the F2 list.',
             'Material Selection': 'Resonator EXP / Weapon EXP / Shell Credit',
-            'Farm Nightmare Nest for Daily Echo': 'Farm 1 Echo from Nightmare Nest to complete Daily Task when needed.'
+            'Farm Nightmare Nest for Daily Echo': 'Farm 1 Echo from Nightmare Nest to complete Daily Task when needed.',
+            'Check Weekly Garden': 'After claiming daily rewards, check weekly Garden progress and run Garden Task '
+                                   'if 6000 points has not been reached.',
+            'Continue Farm After Daily': 'After completing daily activity, continue farming stamina until depleted.'
         }
         material_option_list = ['Resonator EXP', 'Weapon EXP', 'Shell Credit']
         self.config_type = {
@@ -96,16 +102,20 @@ class DailyTask(WWOneTimeTask, BaseCombatTask):
                 # 还原 ensure_main，防范实例状态污染
                 self.get_task_by_class(NightmareNestTask).__dict__.pop('ensure_main', None)
 
-        if need_stamina:
+        continue_farm = self.config.get('Continue Farm After Daily', False)
+
+        if need_stamina or continue_farm:
             target = self.config.get('Which to Farm', self.support_tasks[0])
+            # continue_farm=True → daily=False（刷到体力耗尽）；否则 daily=True（仅刷到日常所需）
+            use_daily = not continue_farm
             if target == self.support_tasks[0]:
-                self.get_task_by_class(TacetTask).farm_tacet(daily=True, used_stamina=used_stamina,
+                self.get_task_by_class(TacetTask).farm_tacet(daily=use_daily, used_stamina=used_stamina,
                                                              config=self.config)
             elif target == self.support_tasks[1]:
-                self.get_task_by_class(ForgeryTask).farm_forgery(daily=True, used_stamina=used_stamina,
+                self.get_task_by_class(ForgeryTask).farm_forgery(daily=use_daily, used_stamina=used_stamina,
                                                                  config=self.config)
             else:
-                self.get_task_by_class(SimulationTask).farm_simulation(daily=True, used_stamina=used_stamina,
+                self.get_task_by_class(SimulationTask).farm_simulation(daily=use_daily, used_stamina=used_stamina,
                                                                        config=self.config)
             self.sleep(4)
 
@@ -114,7 +124,28 @@ class DailyTask(WWOneTimeTask, BaseCombatTask):
         self.claim_mail()
         self.sleep(1)
         self.claim_battle_pass()
+        self.check_weekly_garden()
         self.log_info('Task completed', notify=True)
+
+    def check_weekly_garden(self):
+        if not self.config.get('Check Weekly Garden', True):
+            return
+        self.info_set('current task', 'check weekly garden')
+        self.log_info('check weekly garden')
+        try:
+            garden_task = self.get_task_by_class(GardenTask)
+            garden_task.open_garden_weekly_page()
+            if garden_task.is_weekly_garden_completed():
+                self.log_info('weekly garden already completed')
+                return
+            self.log_info('weekly garden not completed, run GardenTask')
+            self.run_task_by_class(GardenTask)
+        except TaskDisabledException:
+            raise
+        except Exception as e:
+            self.log_error("GardenTask Failed", e)
+            self.screenshot('GardenTask')
+            self.ensure_main(time_out=180)
 
     def claim_battle_pass(self):
         self.log_info('battle pass')
@@ -136,8 +167,8 @@ class DailyTask(WWOneTimeTask, BaseCombatTask):
 
     def open_daily(self):
         self.log_info('open_daily')
-        gray_book_quest = self.openF2Book("gray_book_quest")
-        self.click_box(gray_book_quest, after_sleep=1.5)
+        self.openF2Book("gray_book_quest")
+        self.click(0.17, 0.12, after_sleep=1)
         progress = self.ocr(0.1, 0.1, 0.5, 0.75, match=re.compile(r'^(\d+)/180$'))
         if not progress:
             self.click(0.974, 0.6, after_sleep=1)
@@ -148,6 +179,7 @@ class DailyTask(WWOneTimeTask, BaseCombatTask):
             current = 0
         self.info_set('current daily progress', current)
         return current, self.get_total_daily_points() >= 100
+        # 请注意：如果任务【累计消耗180点结晶波片】已完成，current 也可能为 0，因为翻页后也有可能识别不到已用体力。
 
     def get_total_daily_points(self):
         points_boxes = self.ocr(0.19, 0.8, 0.30, 0.93, match=number_re)
