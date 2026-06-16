@@ -7,6 +7,7 @@ from qfluentwidgets import FluentIcon
 from ok import Logger
 from src.task.BaseWWTask import number_re
 from src.task.ForgeryTask2 import ForgeryTask2
+from src.task.GardenTask import GardenTask
 from src.task.NightmareNestTask import NightmareNestTask
 from src.task.TacetTask2 import TacetTask2
 from src.task.SimulationTask2 import SimulationTask2
@@ -34,6 +35,7 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
             'Simulation Challenge Count': 0,
             'Auto Farm all Nightmare Nest': False,
             'Farm Nightmare Nest for Daily Echo': True,
+            'Check Weekly Garden': True,
             'Task Retry': 5,
             'Exit with Error': True,
         }
@@ -45,6 +47,8 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
             'Material Selection': 'Resonator EXP / Weapon EXP / Shell Credit',
             'Simulation Challenge Count': 'farm Simulation Challenge N time(s), 40 stamina per time, set a large number to use all stamina',
             'Farm Nightmare Nest for Daily Echo': 'Farm 1 Echo from Nightmare Nest to complete Daily Task when needed.',
+            'Check Weekly Garden': 'After claiming daily rewards, check weekly Garden progress and run Garden Task '
+                                   'if 6000 points has not been reached.',
             'Task Retry': 'retry time(s) for each task',
             'Exit with Error': 'exit game and app with exception raised when option [Exit After Task] checked'
         }
@@ -181,12 +185,41 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
                     if (i >= self.config.get('Task Retry')):
                         self.log_error("未能领取 版本奖励，需要手动登陆游戏处理。", notify=True)
             #
+            current_task = 'weekly_garden'
+            self.info_set('current task', current_task)
+            self.ensure_main()
+            for i in range(1, self.config.get('Task Retry') + 1):
+                try:
+                    self.ensure_main()
+                    self.check_weekly_garden()
+                    self.sleep(1)
+                    break
+                except Exception as e:
+                    self.log_error(f'weekly garden attempt "{i}" failed\n{''.join(traceback.format_exception(e))}')
+                    self.screenshot(f'{datetime.now().strftime("%Y%m%d")}_DailyTask2_WeeklyGarden_Attempt_{i}')
+                    self.ensure_main()
+                    if (i >= self.config.get('Task Retry')):
+                        self.log_error("未能完成 幻梦游园（周度游历），需要手动登陆游戏处理。", notify=True)
+            #
         except Exception as e:
             self.log_error(f'一条龙错误 | {current_task} | {str(e)}\n{''.join(traceback.format_exception(e))}')
             self.screenshot(f'{datetime.now().strftime("%Y%m%d")}_DailyTask2_Error')
             #
             if not self.config.get('Exit with Error'):
                 raise e
+
+    def check_weekly_garden(self):
+        if not self.config.get('Check Weekly Garden', True):
+            return
+        self.info_set('current task', 'check weekly garden')
+        self.log_info('check weekly garden')
+        garden_task = self.get_task_by_class(GardenTask)
+        garden_task.open_garden_weekly_page()
+        if garden_task.is_weekly_garden_completed():
+            self.log_info('weekly garden already completed')
+            return
+        self.log_info('weekly garden not completed, run GardenTask')
+        self.run_task_by_class(GardenTask)
 
     def claim_battle_pass(self):
         self.log_info('battle pass')
@@ -208,8 +241,7 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
 
     def open_daily(self):
         self.log_info('open_daily')
-        gray_book_quest = self.openF2Book("gray_book_quest")
-        self.click_box(gray_book_quest, after_sleep=1.5)
+        self.openF2Book("gray_book_quest")
         self.click(0.17, 0.12, after_sleep=1)
         progress = self.ocr(0.1, 0.1, 0.5, 0.75, match=re.compile(r'^(\d+)/180$'))
         if not progress:
