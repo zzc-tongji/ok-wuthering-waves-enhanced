@@ -568,6 +568,15 @@ msgstr "⭐ 日常一条龙"
 msgid "open game, login, monthly card, mail, farm, activity, radio"
 msgstr "启动, 月卡, 邮件, 刷体力, 活跃度 (未完成不报错), 先约电台"
 
+msgid "Run Tacet or Forgery First"
+msgstr "优先运行 无音区 或 凝素领域"
+
+msgid "Tacet First"
+msgstr "无音区"
+
+msgid "Forgery First"
+msgstr "凝素领域"
+
 msgid "Task Retry"
 msgstr "任务重试"
 

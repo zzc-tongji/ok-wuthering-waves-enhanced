@@ -27,6 +27,7 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
         self.icon = FluentIcon.CAR
         self.support_schedule_task = True
         self.default_config = {
+            'Run Tacet or Forgery First': 'Tacet First',
             'Which Tacet Suppression to Farm': 1,  # starts with 1
             'Tacet Suppression Count': 0,
             'Which Forgery Challenge to Farm': 1,  # starts with 1
@@ -52,11 +53,32 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
             'Task Retry': 'retry time(s) for each task',
             'Exit with Error': 'exit game and app with exception raised when option [Exit After Task] checked'
         }
-        material_option_list = ['Resonator EXP', 'Weapon EXP', 'Shell Credit']
+        stamina_farm_config_list = [
+            'Which Tacet Suppression to Farm',
+            'Tacet Suppression Count',
+            'Which Forgery Challenge to Farm',
+            'Forgery Challenge Count',
+            'Material Selection',
+            'Simulation Challenge Count',
+        ]
         self.config_type = {
+            'Run Tacet or Forgery First': {
+                'type': 'drop_down',
+                'options': ['Tacet First', 'Forgery First'],
+                'sub_configs': {
+                    'Tacet First': stamina_farm_config_list,
+                    'Forgery First': stamina_farm_config_list,
+                }
+            },
+            'Auto Farm all Nightmare Nest': {
+                'sub_configs': {
+                    True: ['Farm Nightmare Nest for Daily Echo'],
+                    False: ['Farm Nightmare Nest for Daily Echo'],
+                }
+            },
             'Material Selection': {
                 'type': 'drop_down',
-                'options': material_option_list
+                'options': ['Resonator EXP', 'Weapon EXP', 'Shell Credit']
             },
         }
         self.add_exit_after_config()
@@ -100,44 +122,53 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
             else:
                 self.log_info('NO NEED to farm nightmare nest(s), skipped')
             #
-            current_task = 'farm_tacet'
-            self.info_set('current task', current_task)
-            for i in range(1, self.config.get('Task Retry') + 1):
-                try:
-                    self.info_set('farm tacet attempt', i)
-                    self.get_task_by_class(TacetTask2).farm_tacet(config=self.config)
-                    break
-                except Exception as e:
-                    self.log_error(f'farm tacet attempt "{i}" failed\n{''.join(traceback.format_exception(e))}')
-                    self.screenshot(f'{datetime.now().strftime("%Y%m%d")}_DailyTask2_Tacet_Attempt_{i}')
-                    if (i >= self.config.get('Task Retry')):
-                        raise e
-            #
-            current_task = 'farm_forgery'
-            self.info_set('current task', current_task)
-            for i in range(1, self.config.get('Task Retry') + 1):
-                try:
-                    self.info_set('farm forgery attempt', i)
-                    self.get_task_by_class(ForgeryTask2).farm_forgery(config=self.config)
-                    break
-                except Exception as e:
-                    self.log_error(f'farm forgery attempt "{i}" failed\n{''.join(traceback.format_exception(e))}')
-                    self.screenshot(f'{datetime.now().strftime("%Y%m%d")}_DailyTask2_Forgery_Attempt_{i}')
-                    if (i >= self.config.get('Task Retry')):
-                        raise e
-            #
-            current_task = 'farm_simulation'
-            self.info_set('current task', current_task)
-            for i in range(1, self.config.get('Task Retry') + 1):
-                try:
-                    self.info_set('farm simulation attempt', i)
-                    self.get_task_by_class(SimulationTask2).farm_simulation(config=self.config)
-                    break
-                except Exception as e:
-                    self.log_error(f'farm simulation attempt "{i}" failed\n{''.join(traceback.format_exception(e))}')
-                    self.screenshot(f'{datetime.now().strftime("%Y%m%d")}_DailyTask2_Simulation_Attempt_{i}')
-                    if (i >= self.config.get('Task Retry')):
-                        raise e
+            def tacet():
+                nonlocal current_task
+                current_task = 'farm_tacet'
+                self.info_set('current task', current_task)
+                for i in range(1, self.config.get('Task Retry') + 1):
+                    try:
+                        self.info_set('farm tacet attempt', i)
+                        self.get_task_by_class(TacetTask2).farm_tacet(config=self.config)
+                        break
+                    except Exception as e:
+                        self.log_error(f'farm tacet attempt "{i}" failed\n{''.join(traceback.format_exception(e))}')
+                        self.screenshot(f'{datetime.now().strftime("%Y%m%d")}_DailyTask2_Tacet_Attempt_{i}')
+                        if (i >= self.config.get('Task Retry')):
+                            raise e
+            def forgery():
+                nonlocal current_task
+                current_task = 'farm_forgery'
+                self.info_set('current task', current_task)
+                for i in range(1, self.config.get('Task Retry') + 1):
+                    try:
+                        self.info_set('farm forgery attempt', i)
+                        self.get_task_by_class(ForgeryTask2).farm_forgery(config=self.config)
+                        break
+                    except Exception as e:
+                        self.log_error(f'farm forgery attempt "{i}" failed\n{''.join(traceback.format_exception(e))}')
+                        self.screenshot(f'{datetime.now().strftime("%Y%m%d")}_DailyTask2_Forgery_Attempt_{i}')
+                        if (i >= self.config.get('Task Retry')):
+                            raise e
+            def simulation():
+                nonlocal current_task
+                current_task = 'farm_simulation'
+                self.info_set('current task', current_task)
+                for i in range(1, self.config.get('Task Retry') + 1):
+                    try:
+                        self.info_set('farm simulation attempt', i)
+                        self.get_task_by_class(SimulationTask2).farm_simulation(config=self.config)
+                        break
+                    except Exception as e:
+                        self.log_error(f'farm simulation attempt "{i}" failed\n{''.join(traceback.format_exception(e))}')
+                        self.screenshot(f'{datetime.now().strftime("%Y%m%d")}_DailyTask2_Simulation_Attempt_{i}')
+                        if (i >= self.config.get('Task Retry')):
+                            raise e
+            if self.config.get('Run Tacet or Forgery First') == 'Forgery First':
+                forgery(); tacet()
+            else:
+                tacet(); forgery()
+            simulation()
             #
             current_task = 'claim_daily'
             self.info_set('current task', current_task)
