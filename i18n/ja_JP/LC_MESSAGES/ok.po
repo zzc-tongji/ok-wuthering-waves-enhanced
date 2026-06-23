@@ -565,6 +565,60 @@ msgid ""
 "Wait time before each combat(seconds), set 5 if farming Sentry Construct"
 msgstr "各戦闘前の待機時間(秒)。異構艤装を周回する場合は5秒に設定してください。"
 
+msgid "⭐ Daily Task"
+msgstr "⭐ 日課一括"
+
+msgid "open game, login, monthly card, mail, farm, activity, radio"
+msgstr "ゲーム起動、ログイン、月間パス、メール、周回、活躍度、ラジオ"
+
+msgid "Run Tacet or Forgery First"
+msgstr "無音区または凝素領域を先に実行"
+
+msgid "Tacet First"
+msgstr "無音区を先に実行"
+
+msgid "Forgery First"
+msgstr "凝素領域を先に実行"
+
+msgid "Task Retry"
+msgstr "タスクリトライ"
+
+msgid "retry time(s) for each task"
+msgstr "各タスクの失敗時リトライ回数"
+
+msgid "Exit with Error"
+msgstr "エラー時に終了"
+
+msgid "exit game and app with exception raised when option [Exit After Task] checked"
+msgstr "[Exit After Task] が選択されている場合、例外発生時にゲームとアプリを終了します"
+
+msgid "⭐ Tacet Suppression"
+msgstr "⭐ 無音区"
+
+msgid "Tacet Suppression Count"
+msgstr "無音区の周回回数"
+
+msgid "farm Tacet Suppression N time(s), 60 stamina per time, set a large number to use all stamina"
+msgstr "無音区を N 回周回します。1回につきスタミナ60。すべてのスタミナを使うには大きな数値を設定してください"
+
+msgid "⭐ Simulation Challenge"
+msgstr "⭐ シミュレーション挑戦"
+
+msgid "Simulation Challenge Count"
+msgstr "シミュレーション挑戦の周回回数"
+
+msgid "farm Simulation Challenge N time(s), 40 stamina per time, set a large number to use all stamina"
+msgstr "シミュレーション挑戦を N 回周回します。1回につきスタミナ40。すべてのスタミナを使うには大きな数値を設定してください"
+
+msgid "⭐ Forgery Challenge"
+msgstr "⭐ 凝素領域"
+
+msgid "Forgery Challenge Count"
+msgstr "凝素領域の周回回数"
+
+msgid "farm Forgery Challenge N time(s), 40 stamina per time, set a large number to use all stamina"
+msgstr "凝素領域を N 回周回します。1回につきスタミナ40。すべてのスタミナを使うには大きな数値を設定してください"
+
 msgid "Simulation Challenge"
 msgstr "シミュレーション挑戦"
 

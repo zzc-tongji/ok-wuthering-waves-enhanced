@@ -565,6 +565,60 @@ msgid ""
 "Wait time before each combat(seconds), set 5 if farming Sentry Construct"
 msgstr "각 전투 전 대기 시간(초). 이성 무장 파밍 시 5로 설정하세요."
 
+msgid "⭐ Daily Task"
+msgstr "⭐ 일일 임무"
+
+msgid "open game, login, monthly card, mail, farm, activity, radio"
+msgstr "게임 실행, 로그인, 월정액 카드, 우편, 파밍, 활동도, 라디오"
+
+msgid "Run Tacet or Forgery First"
+msgstr "무음 구역 또는 응소의 영역 먼저 실행"
+
+msgid "Tacet First"
+msgstr "무음 구역 먼저"
+
+msgid "Forgery First"
+msgstr "응소의 영역 먼저"
+
+msgid "Task Retry"
+msgstr "임무 재시도"
+
+msgid "retry time(s) for each task"
+msgstr "각 임무 실패 시 재시도 횟수"
+
+msgid "Exit with Error"
+msgstr "오류 발생 시 종료"
+
+msgid "exit game and app with exception raised when option [Exit After Task] checked"
+msgstr "[Exit After Task] 옵션이 선택된 경우 예외 발생 시 게임과 앱을 종료합니다"
+
+msgid "⭐ Tacet Suppression"
+msgstr "⭐ 무음 구역"
+
+msgid "Tacet Suppression Count"
+msgstr "무음 구역 파밍 횟수"
+
+msgid "farm Tacet Suppression N time(s), 60 stamina per time, set a large number to use all stamina"
+msgstr "무음 구역을 N회 파밍합니다. 1회당 스태미나 60, 모든 스태미나를 사용하려면 큰 수를 설정하세요"
+
+msgid "⭐ Simulation Challenge"
+msgstr "⭐ 시뮬레이션 영역"
+
+msgid "Simulation Challenge Count"
+msgstr "시뮬레이션 영역 파밍 횟수"
+
+msgid "farm Simulation Challenge N time(s), 40 stamina per time, set a large number to use all stamina"
+msgstr "시뮬레이션 영역을 N회 파밍합니다. 1회당 스태미나 40, 모든 스태미나를 사용하려면 큰 수를 설정하세요"
+
+msgid "⭐ Forgery Challenge"
+msgstr "⭐ 응소의 영역"
+
+msgid "Forgery Challenge Count"
+msgstr "응소의 영역 파밍 횟수"
+
+msgid "farm Forgery Challenge N time(s), 40 stamina per time, set a large number to use all stamina"
+msgstr "응소의 영역을 N회 파밍합니다. 1회당 스태미나 40, 모든 스태미나를 사용하려면 큰 수를 설정하세요"
+
 msgid "Simulation Challenge"
 msgstr "시뮬레이션 영역"
 
