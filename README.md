@@ -6,6 +6,8 @@
 
 代码变更：https://github.com/zzc-tongji/ok-ww-enhanced/compare/master..main?diff=split 。
 
+构建方法变更：[build.diff.html](https://htmlpreview.github.io/?https://raw.githubusercontent.com/zzc-tongji/ok-ww-enhanced/refs/heads/main/readme/build.diff.html) 。
+
 ### 新功能
 
 所有新增功能用⭐标出。
