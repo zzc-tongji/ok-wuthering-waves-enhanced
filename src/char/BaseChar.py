@@ -778,7 +778,8 @@ class BaseChar:
             self.task.click(interval=0.1)
 
     def need_fast_perform(self):
-        current_char = self.task.get_current_char(raise_exception=False) if hasattr(self.task, 'get_current_char') else self
+        current_char = self.task.get_current_char(raise_exception=False) if hasattr(self.task,
+                                                                                    'get_current_char') else self
         for char in getattr(self.task, 'chars', []):
             if char is None or char == current_char:
                 continue
@@ -947,6 +948,12 @@ class BaseChar:
     def has_long_action2(self):
         """是否有长动作条"""
         return self.task.find_one(self.task.get_target_names()[0], box='target_box_long2', threshold=0.6)
+
+    def has_short_action(self):
+        """是否有短动作条"""
+        if hasattr(self.task, 'has_short_action'):
+            return self.task.has_short_action()
+        return self.task.find_one(self.task.get_target_names()[0], box='target_box_short', threshold=0.6)
 
     def f_break(self, check_f_on_switch=False):
         """使用F进行击破
