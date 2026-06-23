@@ -559,9 +559,6 @@ msgstr "刷4C(大世界/副本)"
 msgid "Combat Wait Time"
 msgstr "戰鬥開始前等待時間(秒)"
 
-msgid "Wait time before each combat(seconds), set 5 if farming Sentry Construct"
-msgstr "如果刷異構武裝設置為5秒"
-
 msgid "⭐ Daily Task"
 msgstr "⭐ 日常一條龍"
 
