@@ -1,0 +1,537 @@
+name: COCO Preview
+
+on:
+  push:
+    # Sequence of patterns matched against refs/tags
+    tags:
+      # format as "v3.3.80-rc.0" (worked for pyappify-action >=1.1.0)
+      - 'v[0-9]+.[0-9]+.[0-9]+-rc.[0-9]+'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: '3.12'
+  PILLOW_VERSION: '11.3.0'
+  PREVIEW_REPOSITORY: zzc-tongji/ok-ww-e-coco-preview
+
+jobs:
+  publish:
+    name: Generate and publish COCO preview
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout OK-WW-E
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          lfs: true
+          persist-credentials: false
+
+      - name: Check preview publish token
+        env:
+          PREVIEW_TOKEN: ${{ secrets._GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${PREVIEW_TOKEN}" ]; then
+            echo "::error::Missing required secret: secrets._GITHUB_TOKEN"
+            exit 1
+          fi
+
+          response_file="$(mktemp)"
+          http_code="$(
+            curl -sS \
+              -H "Authorization: Bearer ${PREVIEW_TOKEN}" \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              -o "${response_file}" \
+              -w "%{http_code}" \
+              "https://api.github.com/repos/${PREVIEW_REPOSITORY}"
+          )"
+
+          if [ "${http_code}" != "200" ]; then
+            echo "::error::secrets._GITHUB_TOKEN cannot access ${PREVIEW_REPOSITORY}; GitHub API returned HTTP ${http_code}."
+            cat "${response_file}"
+            exit 1
+          fi
+
+          python3 - "${response_file}" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          data = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          permissions = data.get("permissions") or {}
+          if not permissions.get("push"):
+              print(
+                  "::error::secrets._GITHUB_TOKEN can access the preview repository, "
+                  "but it does not report push/write permission."
+              )
+              sys.exit(1)
+          print("secrets._GITHUB_TOKEN is present and has push permission.")
+          PY
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Cache pip packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: coco-preview-pip-${{ runner.os }}-python-${{ env.PYTHON_VERSION }}-pillow-${{ env.PILLOW_VERSION }}
+          restore-keys: |
+            coco-preview-pip-${{ runner.os }}-python-${{ env.PYTHON_VERSION }}-
+
+      - name: Install locked dependencies
+        run: |
+          python -m pip install "pillow==${PILLOW_VERSION}"
+
+      - name: Generate preview into temp directory
+        env:
+          PREVIEW_DIR: ${{ runner.temp }}/coco-preview
+        run: |
+          python <<'PY'
+          from __future__ import annotations
+
+          import html
+          import json
+          import math
+          import os
+          import re
+          import shutil
+          from collections import defaultdict
+          from dataclasses import dataclass
+          from pathlib import Path
+          from typing import Any
+
+          from PIL import Image
+
+
+          WORKSPACE = Path(os.environ["GITHUB_WORKSPACE"]).resolve()
+          ASSETS_DIR = WORKSPACE / "assets"
+          ANNOTATIONS_PATH = ASSETS_DIR / "coco_annotations.json"
+          OUTPUT_DIR = Path(os.environ["PREVIEW_DIR"]).resolve()
+          GENERATED_IMAGE_RE = re.compile(r"^I\..+\.C\..+\.F\..+\.png$")
+          SAFE_FILENAME_RE = re.compile(r'[<>:"/\\|?*\x00-\x1f]')
+
+
+          @dataclass(frozen=True)
+          class PreviewItem:
+              feature_name: str
+              category_id: int
+              image_id: int
+              annotation_id: int
+              source_image: str
+              bbox: tuple[float, float, float, float]
+              output_name: str
+              width: int
+              height: int
+
+
+          def safe_filename_part(value: Any) -> str:
+              text = str(value).strip()
+              text = SAFE_FILENAME_RE.sub("_", text)
+              text = re.sub(r"\s+", "_", text)
+              text = text.rstrip(" .")
+              return text or "unnamed"
+
+
+          def load_coco(path: Path) -> dict[str, Any]:
+              with path.open("r", encoding="utf-8") as file:
+                  data = json.load(file)
+
+              for key in ("categories", "images", "annotations"):
+                  if key not in data or not isinstance(data[key], list):
+                      raise ValueError(f"{path} is missing a COCO '{key}' list")
+              return data
+
+
+          def clean_output_dir(output_dir: Path) -> None:
+              output_dir.mkdir(parents=True, exist_ok=True)
+              for path in output_dir.iterdir():
+                  if path.name in {"index.html", "readme.html"} or GENERATED_IMAGE_RE.match(path.name):
+                      if path.is_dir():
+                          shutil.rmtree(path)
+                      else:
+                          path.unlink()
+
+
+          def clamp_bbox(
+              bbox: list[int | float], image_width: int, image_height: int
+          ) -> tuple[int, int, int, int]:
+              if len(bbox) != 4:
+                  raise ValueError(f"Expected bbox [x, y, width, height], got {bbox!r}")
+
+              x, y, width, height = (float(value) for value in bbox)
+              left = max(0, min(image_width, math.floor(x)))
+              top = max(0, min(image_height, math.floor(y)))
+              right = max(0, min(image_width, math.ceil(x + width)))
+              bottom = max(0, min(image_height, math.ceil(y + height)))
+
+              if right <= left or bottom <= top:
+                  raise ValueError(
+                      f"Bbox {bbox!r} is outside image bounds {image_width}x{image_height}"
+                  )
+
+              return left, top, right, bottom
+
+
+          def generate_previews(
+              annotations_path: Path, output_dir: Path, clean: bool = True
+          ) -> list[PreviewItem]:
+              annotations_path = annotations_path.resolve()
+              assets_dir = annotations_path.parent
+              output_dir = output_dir.resolve()
+
+              data = load_coco(annotations_path)
+              categories = {
+                  int(category["id"]): str(category.get("name", category["id"]))
+                  for category in data["categories"]
+              }
+              images = {int(image["id"]): image for image in data["images"]}
+
+              if clean:
+                  clean_output_dir(output_dir)
+              else:
+                  output_dir.mkdir(parents=True, exist_ok=True)
+
+              previews: list[PreviewItem] = []
+              opened_images: dict[Path, Image.Image] = {}
+
+              try:
+                  for annotation in sorted(
+                      data["annotations"],
+                      key=lambda item: (
+                          categories.get(int(item["category_id"]), ""),
+                          int(item["image_id"]),
+                          int(item["category_id"]),
+                          int(item.get("id", 0)),
+                      ),
+                  ):
+                      image_id = int(annotation["image_id"])
+                      category_id = int(annotation["category_id"])
+                      annotation_id = int(annotation.get("id", len(previews)))
+                      feature_name = categories.get(category_id, f"category_{category_id}")
+
+                      image_info = images.get(image_id)
+                      if image_info is None:
+                          raise KeyError(
+                              f"Annotation {annotation_id} references missing image_id {image_id}"
+                          )
+
+                      source_image = Path(str(image_info["file_name"]))
+                      source_path = (assets_dir / source_image).resolve()
+                      if source_path not in opened_images:
+                          opened_images[source_path] = Image.open(source_path)
+
+                      image = opened_images[source_path]
+                      left, top, right, bottom = clamp_bbox(
+                          annotation["bbox"], image.width, image.height
+                      )
+                      crop = image.crop((left, top, right, bottom))
+
+                      output_name = (
+                          f"I.{safe_filename_part(image_id)}."
+                          f"C.{safe_filename_part(category_id)}."
+                          f"F.{safe_filename_part(feature_name)}.png"
+                      )
+                      output_path = output_dir / output_name
+                      crop.save(output_path)
+
+                      previews.append(
+                          PreviewItem(
+                              feature_name=feature_name,
+                              category_id=category_id,
+                              image_id=image_id,
+                              annotation_id=annotation_id,
+                              source_image=source_image.as_posix(),
+                              bbox=tuple(float(value) for value in annotation["bbox"]),
+                              output_name=output_name,
+                              width=crop.width,
+                              height=crop.height,
+                          )
+                      )
+              finally:
+                  for image in opened_images.values():
+                      image.close()
+
+              write_index(
+                  output_dir / "index.html",
+                  previews,
+                  image_count=len(images),
+                  category_count=len(categories),
+              )
+              return previews
+
+
+          def write_index(
+              index_path: Path,
+              previews: list[PreviewItem],
+              image_count: int,
+              category_count: int,
+          ) -> None:
+              grouped: dict[str, list[PreviewItem]] = defaultdict(list)
+              for item in previews:
+                  grouped[item.feature_name].append(item)
+              feature_count = len(grouped)
+
+              sections = []
+              nav_links = []
+              for feature_name in sorted(grouped, key=str.lower):
+                  items = sorted(
+                      grouped[feature_name], key=lambda item: (item.image_id, item.category_id)
+                  )
+                  section_id = "feature-" + safe_filename_part(feature_name)
+                  nav_links.append(
+                      f'<a href="#{html.escape(section_id)}">'
+                      f"{html.escape(feature_name)} <span>{len(items)}</span></a>"
+                  )
+
+                  cards = []
+                  for item in items:
+                      bbox_text = ", ".join(f"{value:g}" for value in item.bbox)
+                      cards.append(
+                          f"""
+                          <article class="card" data-feature="{html.escape(item.feature_name.lower())}">
+                            <a href="{html.escape(item.output_name)}" target="_blank">
+                              <img src="{html.escape(item.output_name)}" alt="{html.escape(item.feature_name)}">
+                            </a>
+                            <dl>
+                              <div><dt>file</dt><dd>{html.escape(item.output_name)}</dd></div>
+                              <div><dt>image</dt><dd>{item.image_id} ({html.escape(item.source_image)})</dd></div>
+                              <div><dt>class</dt><dd>{item.category_id}</dd></div>
+                              <div><dt>bbox</dt><dd>[{html.escape(bbox_text)}]</dd></div>
+                              <div><dt>size</dt><dd>{item.width} x {item.height}</dd></div>
+                            </dl>
+                          </article>
+                          """
+                      )
+
+                  sections.append(
+                      f"""
+                      <section id="{html.escape(section_id)}" data-feature="{html.escape(feature_name.lower())}">
+                        <h2>{html.escape(feature_name)} <span>{len(items)}</span></h2>
+                        <div class="grid">
+                          {''.join(cards)}
+                        </div>
+                      </section>
+                      """
+                  )
+
+              content = f"""<!doctype html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <title>COCO Preview of OK-WW-E</title>
+            <style>
+              :root {{
+                color-scheme: light dark;
+                --bg: #f7f7f4;
+                --text: #202124;
+                --muted: #5f6368;
+                --line: #d8d6cf;
+                --panel: #ffffff;
+                --accent: #116a7b;
+              }}
+              @media (prefers-color-scheme: dark) {{
+                :root {{
+                  --bg: #171717;
+                  --text: #f1f1ef;
+                  --muted: #aaa59d;
+                  --line: #3b3935;
+                  --panel: #22211f;
+                  --accent: #5ab6c7;
+                }}
+              }}
+              * {{ box-sizing: border-box; }}
+              body {{
+                margin: 0;
+                background: var(--bg);
+                color: var(--text);
+                font: 14px/1.45 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+              }}
+              header {{
+                position: sticky;
+                top: 0;
+                z-index: 2;
+                display: grid;
+                gap: 12px;
+                padding: 18px 24px;
+                border-bottom: 1px solid var(--line);
+                background: color-mix(in srgb, var(--bg) 92%, transparent);
+                backdrop-filter: blur(12px);
+              }}
+              h1, h2, p {{ margin: 0; }}
+              h1 {{ font-size: 22px; font-weight: 700; }}
+              h1 a {{
+                color: var(--accent);
+                text-decoration: none;
+              }}
+              h1 a:hover {{ text-decoration: underline; }}
+              h2 {{
+                margin-bottom: 12px;
+                font-size: 18px;
+                overflow-wrap: anywhere;
+              }}
+              h2 span, nav span {{
+                color: var(--muted);
+                font-size: 12px;
+                font-weight: 500;
+              }}
+              .meta {{ color: var(--muted); }}
+              input {{
+                width: min(520px, 100%);
+                height: 36px;
+                padding: 0 12px;
+                border: 1px solid var(--line);
+                border-radius: 6px;
+                background: var(--panel);
+                color: var(--text);
+                font: inherit;
+              }}
+              nav {{
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+                max-height: 188px;
+                overflow: auto;
+              }}
+              nav a {{
+                padding: 5px 8px;
+                border: 1px solid var(--line);
+                border-radius: 6px;
+                color: var(--text);
+                text-decoration: none;
+                background: var(--panel);
+              }}
+              main {{
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+                align-items: start;
+                gap: 8px;
+                padding: 24px;
+              }}
+              section {{
+                min-width: 0;
+                scroll-margin-top: 190px;
+              }}
+              .grid {{
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+                gap: 4px;
+              }}
+              .card {{
+                display: grid;
+                gap: 10px;
+                align-content: start;
+                min-width: 0;
+                padding: 10px;
+                border: 1px solid var(--line);
+                border-radius: 8px;
+                background: var(--panel);
+              }}
+              .card img {{
+                display: block;
+                max-width: 100%;
+                max-height: 180px;
+                object-fit: contain;
+                margin: auto;
+                image-rendering: auto;
+              }}
+              dl {{
+                display: grid;
+                gap: 4px;
+                margin: 0;
+                color: var(--muted);
+                font-size: 12px;
+              }}
+              dl div {{
+                display: grid;
+                grid-template-columns: 44px minmax(0, 1fr);
+                gap: 8px;
+              }}
+              dt {{ color: var(--accent); font-weight: 650; }}
+              dd {{
+                min-width: 0;
+                margin: 0;
+                overflow-wrap: anywhere;
+              }}
+              .hidden {{ display: none; }}
+            </style>
+          </head>
+          <body>
+            <header>
+              <div>
+                <h1>COCO Preview of <a href="https://github.com/zzc-tongji/ok-ww-enhanced">OK-WW-E</a> (<a href="https://github.com/zzc-tongji/ok-ww-enhanced/blob/main/assets/coco_annotations.json">coco_annotations.json</a>)</h1>
+              </div>
+              <input id="filter" type="search" placeholder="Filter feature_name">
+              <nav id="nav">{''.join(nav_links)}</nav>
+            </header>
+            <main id="content">
+              {''.join(sections)}
+            </main>
+            <script>
+              const filter = document.querySelector("#filter");
+              const sections = [...document.querySelectorAll("section")];
+              const navLinks = [...document.querySelectorAll("nav a")];
+              filter.addEventListener("input", () => {{
+                const query = filter.value.trim().toLowerCase();
+                sections.forEach((section) => {{
+                  section.classList.toggle("hidden", query && !section.dataset.feature.includes(query));
+                }});
+                navLinks.forEach((link) => {{
+                  link.classList.toggle("hidden", query && !link.textContent.toLowerCase().includes(query));
+                }});
+              }});
+            </script>
+          </body>
+          </html>
+          """
+              index_path.write_text(content, encoding="utf-8")
+
+
+          previews = generate_previews(ANNOTATIONS_PATH, OUTPUT_DIR, clean=True)
+          print(f"Generated {len(previews)} crops and {OUTPUT_DIR / 'index.html'}")
+          PY
+
+      - name: Clone preview repository
+        env:
+          PREVIEW_TOKEN: ${{ secrets._GITHUB_TOKEN }}
+          TARGET_REPO: ${{ runner.temp }}/ok-ww-e-coco-preview
+        run: |
+          set -euo pipefail
+          git clone --depth 1 "https://x-access-token:${PREVIEW_TOKEN}@github.com/${PREVIEW_REPOSITORY}.git" "${TARGET_REPO}"
+
+      - name: Copy preview into data
+        env:
+          PREVIEW_DIR: ${{ runner.temp }}/coco-preview
+          TARGET_REPO: ${{ runner.temp }}/ok-ww-e-coco-preview
+        run: |
+          set -euo pipefail
+          rm -rf "${TARGET_REPO}/data"
+          mkdir -p "${TARGET_REPO}/data"
+          cp -a "${PREVIEW_DIR}/." "${TARGET_REPO}/data/"
+
+      - name: Commit and push preview changes
+        env:
+          TARGET_REPO: ${{ runner.temp }}/ok-ww-e-coco-preview
+        run: |
+          set -euo pipefail
+          SOURCE_SHA="$(git -C "${GITHUB_WORKSPACE}" rev-parse --short=7 HEAD)"
+
+          cd "${TARGET_REPO}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A data
+
+          if git diff --cached --quiet; then
+            echo "No preview changes to commit."
+            exit 0
+          fi
+
+          git commit -m "update by ok-ww-e ${SOURCE_SHA}"
+          git push

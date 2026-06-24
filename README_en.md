@@ -67,7 +67,7 @@ It is recommended to install dependencies into a [miniconda](https://www.anacond
 
 ``` powershell
 # requirement
-conda create --name facefusion python=3.12 pip=25.0
+conda create --name okww python=3.12 pip=25.0
 pip install -r requirements.txt --upgrade
 pip install -r requirements-dev.txt --upgrade
 
@@ -78,9 +78,15 @@ python main.py
 python main_debug.py
 ```
 
-#### Run and Debug from VSCode Development Environment
+#### Develop and Debug with VSCode
 
-https://github.com/ok-oldking/ok-wuthering-waves/discussions/934
+https://github-com.translate.goog/ok-oldking/ok-wuthering-waves/discussions/934?_x_tr_sl=zh-CN&_x_tr_tl=en
+
+#### COCO Feature Preview
+
+Image features in `assets/coco_annotations.json` can be previewed at the link below (continuously updated):
+
+https://htmlpreview.github.io/?https://raw.githubusercontent.com/zzc-tongji/ok-ww-e-coco-preview/refs/heads/main/data/index.html
 
 ### Tips
 

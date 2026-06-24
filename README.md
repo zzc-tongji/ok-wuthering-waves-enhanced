@@ -67,7 +67,7 @@ ok-ww-e.exe -t 5 -e
 
 ``` powershell
 # requirement
-conda create --name facefusion python=3.12 pip=25.0
+conda create --name okww python=3.12 pip=25.0
 pip install -r requirements.txt --upgrade
 pip install -r requirements-dev.txt --upgrade
 
@@ -78,9 +78,15 @@ python main.py
 python main_debug.py
 ```
 
-#### 从 VSCode 开发环境运行和调试
+#### 使用 VSCode 进行开发调试
 
 https://github.com/ok-oldking/ok-wuthering-waves/discussions/934
+
+#### COCO 特征预览
+
+图像特征 `assets/coco_annotations.json` 可以通过下列链接预览（持续更新）：
+
+https://htmlpreview.github.io/?https://raw.githubusercontent.com/zzc-tongji/ok-ww-e-coco-preview/refs/heads/main/data/index.html
 
 ### 小贴士
 
