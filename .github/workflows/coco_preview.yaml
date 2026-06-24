@@ -1,4 +1,4 @@
-name: COCO Preview
+name: Coco Preview
 
 on:
   push:
@@ -18,7 +18,7 @@ env:
 
 jobs:
   publish:
-    name: Generate and publish COCO preview
+    name: Generate and publish Coco preview
     runs-on: ubuntu-latest
     steps:
       - name: Checkout OK-WW-E
@@ -145,7 +145,7 @@ jobs:
 
               for key in ("categories", "images", "annotations"):
                   if key not in data or not isinstance(data[key], list):
-                      raise ValueError(f"{path} is missing a COCO '{key}' list")
+                      raise ValueError(f"{path} is missing a Coco '{key}' list")
               return data
 
 
@@ -326,7 +326,7 @@ jobs:
           <head>
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1">
-            <title>COCO Preview of OK-WW-E</title>
+            <title>Coco Preview of OK-WW-E</title>
             <style>
               :root {{
                 color-scheme: light dark;
@@ -466,7 +466,7 @@ jobs:
           <body>
             <header>
               <div>
-                <h1>COCO Preview of <a href="https://github.com/zzc-tongji/ok-ww-enhanced">OK-WW-E</a> (<a href="https://github.com/zzc-tongji/ok-ww-enhanced/blob/main/assets/coco_annotations.json">coco_annotations.json</a>)</h1>
+                <h1><a href="https://github.com/zzc-tongji/ok-ww-e-coco-preview">Coco Preview</a> of <a href="https://github.com/zzc-tongji/ok-ww-enhanced/blob/main/assets/coco_annotations.json">OK-WW-E</a></h1>
               </div>
               <input id="filter" type="search" placeholder="Filter feature_name">
               <nav id="nav">{''.join(nav_links)}</nav>
