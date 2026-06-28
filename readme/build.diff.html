@@ -2111,7 +2111,7 @@
     <td class="d2h-ins">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">      SIGN_BUILD: &#x27;true&#x27;</span>
+            <span class="d2h-code-line-ctn">      SIGN_BUILD: &#x27;false&#x27;</span>
         </div>
     </td>
 </tr><tr>
@@ -2121,7 +2121,7 @@
     <td class="d2h-ins">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">      BUILD_EXE: &#x27;false&#x27;</span>
+            <span class="d2h-code-line-ctn">      BUILD_EXE: &#x27;true&#x27;</span>
         </div>
     </td>
 </tr><tr>
@@ -3276,7 +3276,7 @@
     <td class="d2h-ins">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">      - name: Upload unsigned setup EXE artifact</span>
+            <span class="d2h-code-line-ctn">      - name: Upload unsigned China setup EXE artifact</span>
         </div>
     </td>
 </tr><tr>
@@ -3336,7 +3336,7 @@
     <td class="d2h-ins">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">          path: pyappify_dist&#x2F;*setup.exe</span>
+            <span class="d2h-code-line-ctn">          path: pyappify_dist&#x2F;ok-ww-win32-China-setup.exe</span>
         </div>
     </td>
 </tr><tr>
@@ -3366,7 +3366,7 @@
     <td class="d2h-ins">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">      - name: Sign setup EXEs</span>
+            <span class="d2h-code-line-ctn">      - name: Sign China setup EXE</span>
         </div>
     </td>
 </tr><tr>
@@ -3726,7 +3726,7 @@
     <td class="d2h-ins">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn">        if: env.BUILD_EXE == &#x27;true&#x27; &amp;&amp; steps.release-version.outputs.is_release == &#x27;true&#x27; &amp;&amp; startsWith(github.ref, &#x27;refs&#x2F;tags&#x2F;&#x27;)</span>
+            <span class="d2h-code-line-ctn">        if: env.BUILD_EXE == &#x27;true&#x27; &amp;&amp; steps.release-version.outputs.is_release == &#x27;true&#x27; &amp;&amp; env.SIGN_BUILD == &#x27;true&#x27; &amp;&amp; startsWith(github.ref, &#x27;refs&#x2F;tags&#x2F;&#x27;)</span>
         </div>
     </td>
 </tr><tr>
