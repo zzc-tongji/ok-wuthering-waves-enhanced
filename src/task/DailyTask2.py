@@ -30,7 +30,7 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
         self.default_config = {
             'Try to Farm Weekly-Limited Advanced Skill Material': False,
             'Which Weekly Boss to Teleport': 1,
-            'Boss Level': "80",
+            'Boss Level': "90",
             'Boss': 'Other',
             'Combat Wait Time': 0,
             'Echo Pickup Method': 'Walk',
@@ -95,6 +95,10 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
             'Boss': {
                 'type': "drop_down",
                 'options': FarmEchoTask.boss_list,
+            },
+            'Boss Level': {
+                'type': "drop_down",
+                'options': FarmEchoTask.boss_level,
             },
             'Echo Pickup Method': {
                 'type': "drop_down",
