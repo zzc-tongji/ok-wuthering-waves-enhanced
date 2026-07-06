@@ -51,7 +51,7 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
             'Exit with Error': True,
         }
         self.config_description = {
-            'Which Weekly Boss to Teleport': 'For Example, Denia, From Top to Bottom, Starting with 1',
+            'Which Weekly Boss to Teleport': 'From Top to Bottom, Starting with 1',
             'Boss Level': "Choose the Lowest that Drop a Echo",
             'Boss': 'Select boss profile (includes Combat Wait Time)',
             'Combat Wait Time': 'Wait time before each combat (seconds), overrides Boss profile if set',
