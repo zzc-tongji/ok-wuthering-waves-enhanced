@@ -54,16 +54,37 @@ jobs:
           mkdir -p readme
           diff -u "$FILE1" "$FILE2" | diff2html --style side --input "stdin" --file "$OUTPUT_FILE"
           echo "Diff report has been generated at '$OUTPUT_FILE'."
+          git add --renormalize "$OUTPUT_FILE"
+          if ! git diff-index --quiet HEAD -- "$OUTPUT_FILE"; then
+            git stash push -- "$OUTPUT_FILE"
+            echo "DIFF_STASHED=true" >> $GITHUB_ENV
+            echo "Changes of file '$OUTPUT_FILE' have been stashed."
+          else
+            echo "DIFF_STASHED=false" >> $GITHUB_ENV
+            echo "No changes is found in file '$OUTPUT_FILE'."
+          fi
       - name: Commit and Push
-        if: env.FILES_IDENTICAL == 'false'
+        if: env.FILES_IDENTICAL == 'false' && env.DIFF_STASHED == 'true'
         run: |
           cd $GITHUB_WORKSPACE
-          git add --renormalize readme/DailyTask.diff.html
-          if ! git diff-index --quiet HEAD --; then
+          git fetch origin main
+          git checkout main
+          if ! git stash pop; then
+            echo "git stash pop failed because of conflicts. Please resolve the generated diff update manually."
+            git status --short
+            exit 1
+          fi
+          if ! git diff-index --quiet HEAD -- readme/DailyTask.diff.html; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add --renormalize readme/DailyTask.diff.html
             git commit -m "update file readme/DailyTask.diff.html" readme/DailyTask.diff.html
-            git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" main
+            PUSH_URL="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+            if ! PUSH_OUTPUT=$(git push "$PUSH_URL" main 2>&1); then
+              echo "$PUSH_OUTPUT"
+              echo "git push failed after updating main and reapplying generated changes."
+              exit 1
+            fi
             echo "Changes of file 'readme/DailyTask.diff.html' has been committed and pushed."
           else
             echo "No changes is found in file 'readme/DailyTask.diff.html'."
