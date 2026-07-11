@@ -5,7 +5,7 @@ logger = Logger.get_logger(__name__)
 
 def hijack_use_stamina(task_class):
     #
-    def use_stamina(self, once, must_use=0):
+    def use_stamina(self, once=60, must_use=0): 
         self.sleep(1)
         current, back_up, total = self.get_stamina()
         y = 0.62
