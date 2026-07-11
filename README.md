@@ -139,7 +139,7 @@ https://htmlpreview.github.io/?https://raw.githubusercontent.com/zzc-tongji/ok-w
 
 </div>
 
-### [English Readme](README_en.md) | 中文说明 | [日本語Readme](README_ja.md)
+### [English Readme](README_en.md) | 中文说明 | [繁體中文說明](README_zh_TW.md) | [日本語Readme](README_ja.md)
 
 **演示与教程:** [![YouTube](https://img.shields.io/badge/YouTube-%23FF0000.svg?style=for-the-badge&logo=YouTube&logoColor=white)](https://youtu.be/h6P1KWjdnB4)
 
