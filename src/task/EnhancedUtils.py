@@ -19,7 +19,7 @@ def hijack_use_stamina(task_class):
             logger.info(f"使用单倍体力")
         self.click(x, y, after_sleep=1)
         if self.wait_feature('gem_add_stamina', horizontal_variance=0.4, vertical_variance=0.05,
-                             time_out=2):  # 看是否需要使用备用体力
+                             time_out=2, settle_time=0.5):  # 看是否需要使用备用体力
             self.click(0.70, 0.71, after_sleep=1)  # 点击确认
             self.click(0.70, 0.71, after_sleep=1)
             self.back(after_sleep=1)
