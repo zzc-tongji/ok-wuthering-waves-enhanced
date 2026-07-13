@@ -66,6 +66,7 @@ jobs:
       - name: Commit and Push
         if: env.FILES_IDENTICAL == 'false' && env.DIFF_STASHED == 'true'
         run: |
+          sleep $((RANDOM % 31))
           cd $GITHUB_WORKSPACE
           git fetch origin main
           git checkout main
