@@ -238,7 +238,6 @@ jobs:
             ### 更新日志 ${{ needs.synchronize.outputs.start_tag }} -> ${{ needs.synchronize.outputs.end_tag }}:
               ${{ needs.synchronize.outputs.changes }}
             ### 下载说明
-              * ok-ww-e-win32-online-setup.exe 在线安装包, 在线白嫖的服务器不一定稳定, 建议优先使用完整包。
               * ok-ww-e-win32-Global-setup.exe full package with dependencies, using GitHub and PyPi as update source.
               * 不要下载 `ok-ww-e-win32.zip` 和 `SourceCode.zip` 。 Do Not Download `ok-ww-e-win32.zip` and `SourceCode.zip` .
           draft: false
