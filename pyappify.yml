@@ -1,5 +1,7 @@
 name: "ok-ww-e"
 uac: true
+icon: "icons/icon.png"
+
 profiles:
   - name: "Global"
     git_url: "https://github.com/zzc-tongji/ok-ww-e"
