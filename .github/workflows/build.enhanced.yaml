@@ -1,4 +1,5 @@
-name: Build Windows Executable (ok-ww-e)
+name: Windows Release (Enhanced)
+run-name: Windows release · ${{ github.ref_name }}
 
 on:
   push:
@@ -8,84 +9,150 @@ on:
       - 'v[0-9]+.[0-9]+.[0-9]+-rc.[0-9]+'
   workflow_dispatch:
 
+concurrency:
+  group: windows-release-${{ github.ref }}
+  cancel-in-progress: false
+
 permissions:
   contents: write
   actions: write
 
+env:
+  PYTHON_VERSION: '3.12'
+  PYTHONIOENCODING: 'UTF-8'
+  PYTHONLEGACYWINDOWSSTDIO: 'UTF-8'
+
 jobs:
-  build:
-    name: Build exe with launcher
+  validate:
+    name: 1 · Validate
     runs-on: windows-latest
 
-    env:
-      PYTHONIOENCODING: 'UTF-8'
-
-    strategy:
-      matrix:
-        python-version: [ 3.12 ]
-
     steps:
-      - name: Configure git
+      - name: Configure runner
+        shell: pwsh
         run: |
           [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
           git config --global core.autocrlf false
           git config --global core.eol lf
           git config --global user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
           git config --global user.name "${{ github.actor }}"
-          echo "action_state=yellow" >> $env:GITHUB_ENV
-          echo "${{ env.action_state }}"
 
-      - uses: actions/checkout@v4
+      - name: Check out source
+        uses: actions/checkout@v4
         with:
           submodules: true
           lfs: true
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
 
-      - name: Set UTF-8 encoding
+      - name: Install dependencies
         run: |
-          set PYTHONIOENCODING=utf-8
-          set PYTHONLEGACYWINDOWSSTDIO=utf-8
-          echo PYTHONIOENCODING=utf-8 >> $GITHUB_ENV
+          python -m pip install -r requirements.txt
+          python -m pip install -r requirements-dev.txt
 
-      - name: Install Dependencies
+      - name: Prepare release requirements
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: python -m ok.update.inline_ok_requirements --tag "$env:RELEASE_TAG"
+
+      - name: Run tests
+        env:
+          GITHUB_TOKEN: ''
+          GH_TOKEN: ''
+          GEMINI_API_KEY: ''
+          AI_API_KEY: ''
+          ACTIONS_RUNTIME_TOKEN: ''
+          ACTIONS_ID_TOKEN_REQUEST_TOKEN: ''
         run: |
-          pip install -r requirements.txt
-          pip install -r requirements-dev.txt
+          @(
+            'GITHUB_TOKEN',
+            'GH_TOKEN',
+            'GEMINI_API_KEY',
+            'AI_API_KEY',
+            'ACTIONS_RUNTIME_TOKEN',
+            'ACTIONS_ID_TOKEN_REQUEST_TOKEN'
+          ) | ForEach-Object {
+            Remove-Item "Env:\$_" -ErrorAction SilentlyContinue
+          }
 
-      - name: inline_ok_requirements
+          Get-ChildItem -Path ".\tests\*.py" | ForEach-Object {
+            Write-Host "Running tests in $($_.FullName)"
+            python -m unittest $_.FullName
+
+            if ($LASTEXITCODE -ne 0) {
+              throw "Tests failed in $($_.FullName)"
+            }
+          }
+
+  synchronize:
+    name: 2 · Synchronize repositories
+    needs: validate
+    runs-on: windows-latest
+    outputs:
+      is_release: ${{ steps.release_version.outputs.is_release }}
+      start_tag: ${{ steps.sync.outputs.start_tag }}
+      end_tag: ${{ steps.sync.outputs.end_tag }}
+      changes: ${{ steps.sync.outputs.changes_with_asterisk }}
+
+    steps:
+      - name: Configure runner
+        shell: pwsh
+        run: |
+          [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+          git config --global core.autocrlf false
+          git config --global core.eol lf
+          git config --global user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
+          git config --global user.name "${{ github.actor }}"
+
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          lfs: true
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install -r requirements.txt
+          python -m pip install -r requirements-dev.txt
+
+      - name: Prepare release requirements
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: python -m ok.update.inline_ok_requirements --tag "$env:RELEASE_TAG"
+
+      - name: Check release version
+        id: release_version
+        shell: pwsh
         env:
           RELEASE_TAG: ${{ github.ref_name }}
         run: |
-          python -m ok.update.inline_ok_requirements --tag "$env:RELEASE_TAG"
+          $isRelease = $env:RELEASE_TAG -match '^v?\d+\.\d+\.\d+-rc\.\d+$'
+          "is_release=$($isRelease.ToString().ToLowerInvariant())" >> $env:GITHUB_OUTPUT
+          Write-Host "Release version: $isRelease"
 
-      - name: Run tests
-        run: |
-          Get-ChildItem -Path ".\tests\*.py" | ForEach-Object {
-              Write-Host "Running tests in $($_.FullName)"
-              try {
-                  # Run the Python unittest command
-                  python -m unittest $_.FullName
-
-                  # Check if the previous command succeeded
-                  if ($LASTEXITCODE -ne 0) {
-                      throw "Tests failed in $($_.FullName)"
-                  }
-              } catch {
-                  # Stop the loop and return the error
-                  Write-Error $_
-                  exit 1
-              }
-          }
-
-      - name: Sync Repositories
-        id: sync   # Give the step an ID to access its outputs
-        uses: ok-oldking/partial-sync-repo@master # Replace with your action path
+      - name: Synchronize update repositories
+        id: sync
+        uses: ok-oldking/partial-sync-repo@master
         with:
           repos: |
             https://${{ github.repository_owner }}:${{ secrets._GITHUB_TOKEN }}@github.com/${{ github.repository_owner }}/ok-ww-e
@@ -94,25 +161,86 @@ jobs:
           gitignore_file: '.update_repo_gitignore'
           show_author: true
 
-      - name: pyappify build-exe-only
-        id: build-exe-only
-        uses: ok-oldking/pyappify-action@master
-        with:
-          build_exe_only: false
+  package:
+    name: 3 · Build
+    needs: synchronize
+    if: needs.synchronize.outputs.is_release == 'true'
+    runs-on: windows-latest
 
-      - name: Release
+    steps:
+      - name: Configure runner
+        shell: pwsh
+        run: |
+          [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+          git config --global core.autocrlf false
+          git config --global core.eol lf
+          git config --global user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
+          git config --global user.name "${{ github.actor }}"
+
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          lfs: true
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install -r requirements.txt
+          python -m pip install -r requirements-dev.txt
+
+      - name: Prepare release requirements
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: python -m ok.update.inline_ok_requirements --tag "$env:RELEASE_TAG"
+
+      - name: Build installers
+        id: build_installers
+        uses: ok-oldking/pyappify-action@master
+
+      - name: Stage release assets
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-assets
+          path: pyappify_dist/*
+          if-no-files-found: error
+          retention-days: 7
+
+  publish:
+    name: 4 · Publish
+    needs: [ synchronize, package ]
+    if: needs.synchronize.outputs.is_release == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download release assets
+        uses: actions/download-artifact@v4
+        with:
+          name: release-assets
+          path: pyappify_dist
+
+      - name: Create GitHub release
         uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           body: |
-            ### 更新日志 ${{ steps.sync.outputs.start_tag }} -> ${{ steps.sync.outputs.end_tag }}
-              ${{ steps.sync.outputs.changes_with_asterisk }}
+            ### 更新日志 ${{ needs.synchronize.outputs.start_tag }} -> ${{ needs.synchronize.outputs.end_tag }}:
+              ${{ needs.synchronize.outputs.changes }}
             ### 下载说明
               * ok-ww-e-win32-online-setup.exe 在线安装包, 在线白嫖的服务器不一定稳定, 建议优先使用完整包。
               * ok-ww-e-win32-Global-setup.exe full package with dependencies, using GitHub and PyPi as update source.
-              * 不要下载 `ok-ww-e-win32.zip` 和 `SourceCode.zip` 。 Do Not Download `ok-ww-e-win32.zip` and `SourceCode.zip` . 
+              * 不要下载 `ok-ww-e-win32.zip` 和 `SourceCode.zip` 。 Do Not Download `ok-ww-e-win32.zip` and `SourceCode.zip` .
           draft: false
           prerelease: false
           files: pyappify_dist/*
