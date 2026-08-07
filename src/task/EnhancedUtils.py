@@ -8,22 +8,24 @@ def hijack_use_stamina(task_class):
     def use_stamina(self, once=60, must_use=0): 
         self.sleep(1)
         current, back_up, total = self.get_stamina()
-        y = 0.62
         if must_use >= once * 2 and total >= once * 2:
             used = once * 2
-            x = 0.67
+            use_double = True
             logger.info(f"当前加备用大于日常剩余所需, 使用双倍, {must_use} >= {once * 2} and {total} >= {once * 2}")
         else:
             used = once
-            x = 0.32
+            use_double = False
             logger.info(f"使用单倍体力")
-        self.click(x, y, after_sleep=1)
+        if use_double:
+            btn = self.click_dialog_right_button()
+        else:
+            btn = self.click_dialog_left_button()
         if self.wait_feature('gem_add_stamina', horizontal_variance=0.4, vertical_variance=0.05,
                              time_out=2, settle_time=0.5):  # 看是否需要使用备用体力
-            self.click(0.70, 0.71, after_sleep=1)  # 点击确认
-            self.click(0.70, 0.71, after_sleep=1)
+            self.click_relative(0.70, 0.71, hcenter=True, after_sleep=1)  # 点击确认
+            self.click_relative(0.70, 0.71, hcenter=True, after_sleep=1)
             self.back(after_sleep=1)
-            self.click(x, y, after_sleep=1)
+            self.click(btn, after_sleep=1)
 
         current -= used
         must_use -= used
