@@ -23,9 +23,6 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.name = '⭐ Daily Task'
-        self.group_name = "Daily"
-        self.group_icon = FluentIcon.CALENDAR
-        self.icon = FluentIcon.CAR
         self.support_schedule_task = True
         self.default_config = {
             'Try to Farm Weekly-Limited Advanced Skill Material': False,
