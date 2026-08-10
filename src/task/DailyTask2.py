@@ -39,7 +39,6 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
             'Forgery Challenge Count': 0,
             'Material Selection': 'Shell Credit',
             'Simulation Challenge Count': 0,
-            'Auto Farm all Nightmare Nest': False,
             'Farm Nightmare Nest for Daily Echo': True,
             ADDITIONAL_TASKS: [CHECK_WEEKLY_GARDEN],
             'Task Retry': 5,
