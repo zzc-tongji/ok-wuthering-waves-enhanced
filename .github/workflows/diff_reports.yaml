@@ -1,0 +1,225 @@
+name: Diff Reports
+
+on:
+  push:
+    # Sequence of patterns matched against refs/tags
+    tags:
+      # format as "v3.3.80-rc.0" (worked for pyappify-action >=1.1.0)
+      - 'v[0-9]+.[0-9]+.[0-9]+-rc.[0-9]+'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  diff-reports:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.x'
+
+      - name: Check Files Existence
+        run: |
+          set -e
+
+          check_file() {
+            local file="$1"
+            if [ ! -f "$file" ]; then
+              echo "Error: File does not exist: $file"
+              return 1
+            fi
+          }
+
+          check_file ".github/workflows/build.enhanced.yaml"
+          check_file ".github/workflows/build.yml"
+          check_file "src/task/DailyTask.py"
+          check_file "src/task/DailyTask2.py"
+          check_file "src/task/FarmEchoTask.py"
+          check_file "src/task/FarmEchoTask2.py"
+          check_file "src/task/BaseWWTask.py"
+          check_file "src/task/EnhancedUtils.py"
+
+          python - <<'PY'
+          import ast
+          from pathlib import Path
+
+          def remove_def_indent(segment):
+              lines = segment.splitlines()
+              def_line = lines[0]
+              indent = def_line[:len(def_line) - len(def_line.lstrip(' \t'))]
+              if not indent:
+                  return segment.rstrip() + '\n'
+              stripped_lines = []
+              for line in lines:
+                  if line.startswith(indent):
+                      stripped_lines.append(line[len(indent):])
+                  else:
+                      stripped_lines.append(line)
+              return '\n'.join(stripped_lines).rstrip() + '\n'
+
+          def extract_function(file_path, node_path, output_file):
+              source = Path(file_path).read_text(encoding='utf-8')
+              tree = ast.parse(source, filename=file_path)
+              node = tree
+              for name in node_path:
+                  candidates = getattr(node, 'body', [])
+                  for child in candidates:
+                      if isinstance(child, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)) and child.name == name:
+                          node = child
+                          break
+                  else:
+                      raise RuntimeError(f"Cannot find {' -> '.join(node_path)} in {file_path}")
+              segment = ast.get_source_segment(source, node)
+              if segment is None:
+                  lines = source.splitlines()
+                  segment = '\n'.join(lines[node.lineno - 1:node.end_lineno])
+              text = remove_def_indent(segment)
+              Path(output_file).write_text(text, encoding='utf-8')
+
+          extract_function('src/task/BaseWWTask.py', ('BaseWWTask', 'use_stamina'), '/tmp/BaseWWTask.use_stamina.py')
+          extract_function('src/task/EnhancedUtils.py', ('hijack_use_stamina', 'use_stamina'), '/tmp/EnhancedUtils.use_stamina.py')
+          PY
+
+          any_diff_needed=false
+
+          set_diff_flag() {
+            local env_name="$1"
+            local file1="$2"
+            local file2="$3"
+            local label="$4"
+
+            if cmp -s "$file1" "$file2"; then
+              echo "$label is identical. No diff needed."
+              echo "$env_name=false" >> "$GITHUB_ENV"
+            else
+              echo "$label is different. Generating diff."
+              echo "$env_name=true" >> "$GITHUB_ENV"
+              any_diff_needed=true
+            fi
+          }
+
+          set_diff_flag "BUILD_DIFF_NEEDED" ".github/workflows/build.enhanced.yaml" ".github/workflows/build.yml" "build.enhanced vs. build"
+          set_diff_flag "DAILY_TASK_DIFF_NEEDED" "src/task/DailyTask.py" "src/task/DailyTask2.py" "DailyTask2 vs. DailyTask"
+          set_diff_flag "FARM_ECHO_TASK_DIFF_NEEDED" "src/task/FarmEchoTask.py" "src/task/FarmEchoTask2.py" "FarmEchoTask2 vs. FarmEchoTask"
+          set_diff_flag "USE_STAMINA_DIFF_NEEDED" "/tmp/BaseWWTask.use_stamina.py" "/tmp/EnhancedUtils.use_stamina.py" "use_stamina (EnhancedUtils vs. BaseWWTask)"
+
+          echo "ANY_DIFF_NEEDED=$any_diff_needed" >> "$GITHUB_ENV"
+
+      - name: Setup Node.js
+        if: env.ANY_DIFF_NEEDED == 'true'
+        uses: actions/setup-node@v6
+        with:
+          node-version: 'lts/*'
+
+      - name: Cache npm global packages
+        if: env.ANY_DIFF_NEEDED == 'true'
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-global-diff2html-cli-5.2.15
+
+      - name: Install Diff2html
+        if: env.ANY_DIFF_NEEDED == 'true'
+        run: |
+          sudo npm install -g diff2html-cli@5.2.15
+
+      - name: Generate Diff HTML
+        if: env.ANY_DIFF_NEEDED == 'true'
+        run: |
+          set -e
+
+          generated_files=()
+
+          generate_diff() {
+            local needed="$1"
+            local file1="$2"
+            local file2="$3"
+            local output_file="$4"
+
+            if [ "$needed" != "true" ]; then
+              echo "Skipping '$output_file' because source files are identical."
+              return
+            fi
+
+            mkdir -p "$(dirname "$output_file")"
+            diff -u "$file1" "$file2" | diff2html --style side --input "stdin" --file "$output_file"
+            echo "Diff report has been generated at '$output_file'."
+            generated_files+=("$output_file")
+          }
+
+          generate_diff "$BUILD_DIFF_NEEDED" ".github/workflows/build.enhanced.yaml" ".github/workflows/build.yml" "readme/build.diff.html"
+          generate_diff "$DAILY_TASK_DIFF_NEEDED" "src/task/DailyTask.py" "src/task/DailyTask2.py" "readme/DailyTask.diff.html"
+          generate_diff "$FARM_ECHO_TASK_DIFF_NEEDED" "src/task/FarmEchoTask.py" "src/task/FarmEchoTask2.py" "readme/FarmEchoTask.diff.html"
+          generate_diff "$USE_STAMINA_DIFF_NEEDED" "/tmp/BaseWWTask.use_stamina.py" "/tmp/EnhancedUtils.use_stamina.py" "readme/use_stamina.diff.html"
+
+          if [ "${#generated_files[@]}" -eq 0 ]; then
+            echo "DIFF_STASHED=false" >> "$GITHUB_ENV"
+            echo "No diff reports were generated."
+            exit 0
+          fi
+
+          git add --renormalize "${generated_files[@]}"
+
+          changed_files=()
+          for output_file in "${generated_files[@]}"; do
+            if ! git diff-index --quiet HEAD -- "$output_file"; then
+              changed_files+=("$output_file")
+            else
+              echo "No changes are found in file '$output_file'."
+            fi
+          done
+
+          if [ "${#changed_files[@]}" -eq 0 ]; then
+            echo "DIFF_STASHED=false" >> "$GITHUB_ENV"
+            echo "No generated diff report changed."
+          else
+            git stash push -- "${changed_files[@]}"
+            echo "DIFF_STASHED=true" >> "$GITHUB_ENV"
+            echo "CHANGED_DIFF_FILES=${changed_files[*]}" >> "$GITHUB_ENV"
+            echo "Changes of generated diff reports have been stashed."
+          fi
+
+      - name: Commit and Push
+        if: env.DIFF_STASHED == 'true'
+        run: |
+          set -e
+
+          cd "$GITHUB_WORKSPACE"
+          git fetch origin main
+          git checkout main
+
+          if ! git stash pop; then
+            echo "git stash pop failed because of conflicts. Please resolve the generated diff update manually."
+            git status --short
+            exit 1
+          fi
+
+          read -r -a changed_files <<< "$CHANGED_DIFF_FILES"
+
+          if [ "${#changed_files[@]}" -eq 0 ]; then
+            echo "No changed diff reports were found."
+            exit 0
+          fi
+
+          if ! git diff-index --quiet HEAD -- "${changed_files[@]}"; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add --renormalize "${changed_files[@]}"
+            git commit -m "update diff reports" -- "${changed_files[@]}"
+            PUSH_URL="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+            if ! PUSH_OUTPUT=$(git push "$PUSH_URL" main 2>&1); then
+              echo "$PUSH_OUTPUT"
+              echo "git push failed after updating main and reapplying generated changes."
+              exit 1
+            fi
+            echo "Changes of generated diff reports have been committed and pushed."
+          else
+            echo "No generated diff report changed after updating main."
+          fi
