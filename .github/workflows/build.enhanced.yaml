@@ -242,4 +242,5 @@ jobs:
               * 不要下载 `ok-ww-e-win32.zip` 和 `SourceCode.zip` 。 Do Not Download `ok-ww-e-win32.zip` and `SourceCode.zip` .
           draft: false
           prerelease: false
+          make_latest: true
           files: pyappify_dist/*
