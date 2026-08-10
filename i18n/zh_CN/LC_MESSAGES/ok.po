@@ -574,6 +574,12 @@ msgstr "无音区"
 msgid "Forgery First"
 msgstr "凝素领域"
 
+msgid "Select optional tasks. (1) Nightmare Nest: runs before stamina farming to help complete the daily task (2) Farm 4C Echo: runs before stamina farming if \"advanced skill material mode\" enabled, otherwise run afterward (3) other tasks: run afterward."
+msgstr "选择可选任务。(1) 梦魇巢穴：会在消耗体力前运行，以协助完成每日任务 (2) 刷取4C声骸：如果开启 高级技能材料模式，那么将在消耗体力前运行，否则将在之后运行 (3) 其他任务：将在之后运行。"
+
+msgid "Teleport and Farm 4C Echo, Support Weekly-Limited Advanced Skill Material"
+msgstr "传送并刷取4C声骸，支持（周本）高级技能材料"
+
 msgid "Task Retry"
 msgstr "任务重试"
 
@@ -585,6 +591,15 @@ msgstr "报错后退出"
 
 msgid "exit game and app with exception raised when option [Exit After Task] checked"
 msgstr "勾选这个选项：如果「完成后退出」被选定，那么抛出异常也会退出游戏和App。"
+
+msgid "⭐ Farm 4C Echo in Dungeon/World"
+msgstr "⭐ 副本/大世界刷4C声骸"
+
+msgid "Advanced Skill Material Mode"
+msgstr "高级技能材料模式"
+
+msgid "If enabled, execute ONLY when all of the following conditions are met: (1) option \"Teleport to Boss\" is set to \"Weekly Challenge\"; (2) Advanced Skill Material claim count has not reached the weekly limit; (3) stamina is sufficient to farm once. At this time, option \"Repeat Farm Count\" will be ignored and total count will be determined by weekly limit and stamina remaining."
+msgstr "如果启用，只会在下列三个条件均满足时执行：(1) 选项 \"传送至Boss\" 为 \"战歌重奏\" (2) 高级技能材料 获取次数 未达每周上限 (3) 体力至少够刷1次。此时，选项 \"刷多少次\" 将会被无视，实际刷取次数取决于 每周上限 和 剩余体力。"
 
 msgid "⭐ Tacet Suppression"
 msgstr "⭐ 无音区"
@@ -905,15 +920,6 @@ msgstr "传送到第几个Boss挑战"
 
 msgid "From Top to Bottom, Starting with 1"
 msgstr "从上到下，从1开始"
-
-msgid "Advanced Skill Material Mode"
-msgstr "高级技能材料模式"
-
-msgid "If enabled, execute ONLY when all of the following conditions are met: (1) option \"Teleport to Boss\" is set to \"Weekly Challenge\"; (2) Advanced Skill Material claim count has not reached the weekly limit; (3) stamina is sufficient to farm once. At this time, option \"Repeat Farm Count\" will be ignored and total count will be determined by weekly limit and stamina remaining."
-msgstr "如果启用，只会在下列三个条件均满足时执行：(1) 选项 \"传送至Boss\" 为 \"战歌重奏\" (2) 高级技能材料 获取次数 未达每周上限 (3) 体力至少够刷1次。此时，选项 \"刷多少次\" 将会被无视，实际刷取次数取决于 每周上限 和 剩余体力。"
-
-msgid "Try to Farm Weekly-Limited Advanced Skill Material"
-msgstr "尝试刷取（周本）高级技能材料"
 
 msgid "Characters"
 msgstr "角色"

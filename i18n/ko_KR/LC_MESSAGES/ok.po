@@ -576,6 +576,12 @@ msgstr "무음 구역 먼저"
 msgid "Forgery First"
 msgstr "응소의 영역 먼저"
 
+msgid "Select optional tasks. (1) Nightmare Nest: runs before stamina farming to help complete the daily task (2) Farm 4C Echo: runs before stamina farming if \"advanced skill material mode\" enabled, otherwise run afterward (3) other tasks: run afterward."
+msgstr "선택 작업을 고릅니다. (1) Nightmare Nest: 일일 임무 완료를 돕기 위해 스태미나 파밍 전에 실행 (2) Farm 4C Echo: \"advanced skill material mode\"가 켜져 있으면 스태미나 파밍 전에 실행하고, 아니면 이후에 실행 (3) 기타 작업: 이후에 실행합니다."
+
+msgid "Teleport and Farm 4C Echo, Support Weekly-Limited Advanced Skill Material"
+msgstr "텔레포트 후 4코스트 에코 파밍, 주간 제한 고급 스킬 재료 지원"
+
 msgid "Task Retry"
 msgstr "임무 재시도"
 
@@ -587,6 +593,15 @@ msgstr "오류 발생 시 종료"
 
 msgid "exit game and app with exception raised when option [Exit After Task] checked"
 msgstr "[Exit After Task] 옵션이 선택된 경우 예외 발생 시 게임과 앱을 종료합니다"
+
+msgid "⭐ Farm 4C Echo in Dungeon/World"
+msgstr "⭐ 던전/월드에서 코스트 4 에코 파밍"
+
+msgid "Advanced Skill Material Mode"
+msgstr "고급 스킬 재료 모드"
+
+msgid "If enabled, execute ONLY when all of the following conditions are met: (1) option \"Teleport to Boss\" is set to \"Weekly Challenge\"; (2) Advanced Skill Material claim count has not reached the weekly limit; (3) stamina is sufficient to farm once. At this time, option \"Repeat Farm Count\" will be ignored and total count will be determined by weekly limit and stamina remaining."
+msgstr "활성화하면 다음 세 조건이 모두 충족될 때만 실행합니다: (1) \"Teleport to Boss\" 옵션이 \"Weekly Challenge\"로 설정됨 (2) 고급 스킬 재료 수령 횟수가 주간 한도에 도달하지 않음 (3) 한 번 파밍할 만큼 스태미나가 충분함. 이때 \"Repeat Farm Count\" 옵션은 무시되며, 총 횟수는 주간 한도와 남은 스태미나에 따라 결정됩니다."
 
 msgid "⭐ Tacet Suppression"
 msgstr "⭐ 무음 구역"
@@ -857,15 +872,6 @@ msgstr "텔레포트할 보스 도전 번호"
 
 msgid "From Top to Bottom, Starting with 1"
 msgstr "위에서 아래로, 1부터 시작"
-
-msgid "Advanced Skill Material Mode"
-msgstr "고급 스킬 재료 모드"
-
-msgid "If enabled, execute ONLY when all of the following conditions are met: (1) option \"Teleport to Boss\" is set to \"Weekly Challenge\"; (2) Advanced Skill Material claim count has not reached the weekly limit; (3) stamina is sufficient to farm once. At this time, option \"Repeat Farm Count\" will be ignored and total count will be determined by weekly limit and stamina remaining."
-msgstr "활성화하면 다음 세 조건이 모두 충족될 때만 실행합니다: (1) \"Teleport to Boss\" 옵션이 \"Weekly Challenge\"로 설정됨 (2) 고급 스킬 재료 수령 횟수가 주간 한도에 도달하지 않음 (3) 한 번 파밍할 만큼 스태미나가 충분함. 이때 \"Repeat Farm Count\" 옵션은 무시되며, 총 횟수는 주간 한도와 남은 스태미나에 따라 결정됩니다."
-
-msgid "Try to Farm Weekly-Limited Advanced Skill Material"
-msgstr "주간 제한 고급 스킬 재료 파밍 시도"
 
 msgid "Characters"
 msgstr "캐릭터"

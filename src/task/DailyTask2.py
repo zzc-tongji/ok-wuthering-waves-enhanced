@@ -4,11 +4,12 @@ import traceback
 
 from qfluentwidgets import FluentIcon
 
-from ok import Logger
+from ok import Logger, TaskDisabledException
 from src.task.BaseWWTask import number_re
 from src.task.FarmEchoTask import FarmEchoTask
 from src.task.ForgeryTask2 import ForgeryTask2
 from src.task.GardenTask import GardenTask
+from src.task.MergeEchoTask import MergeEchoTask
 from src.task.NightmareNestTask import NightmareNestTask
 from src.task.TacetTask2 import TacetTask2
 from src.task.SimulationTask2 import SimulationTask2
@@ -16,6 +17,12 @@ from src.task.WWOneTimeTask import WWOneTimeTask
 from src.task.BaseCombatTask import BaseCombatTask
 
 logger = Logger.get_logger(__name__)
+
+CHECK_WEEKLY_GARDEN = 'Check Weekly Garden'
+AUTO_FARM_NIGHTMARE_NEST = 'Auto Farm all Nightmare Nest'
+MERGE_ECHO_IF_DISCARDED_OVER_1000 = 'Merge Echo If discarded > 1000'
+TELEPORT_AND_FARM_4C_ECHO = 'Teleport and Farm 4C Echo, Support Weekly-Limited Advanced Skill Material'
+ADDITIONAL_TASKS = 'Additional Tasks to Run After Daily Task'
 
 
 class DailyTask2(WWOneTimeTask, BaseCombatTask):
@@ -25,15 +32,6 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
         self.name = '⭐ Daily Task'
         self.support_schedule_task = True
         self.default_config = {
-            'Try to Farm Weekly-Limited Advanced Skill Material': False,
-            'Which Weekly Boss to Teleport': 1,
-            'Boss Level': "90",
-            'Boss': 'Other',
-            'Combat Wait Time': 0,
-            'Echo Pickup Method': 'Walk',
-            'Use Liberation': True,
-            'Switch to Healer after Combat': True,
-            #
             'Run Tacet or Forgery First': 'Tacet First',
             'Which Tacet Suppression to Farm': 1,  # starts with 1
             'Tacet Suppression Count': 0,
@@ -43,18 +41,11 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
             'Simulation Challenge Count': 0,
             'Auto Farm all Nightmare Nest': False,
             'Farm Nightmare Nest for Daily Echo': True,
-            'Check Weekly Garden': True,
+            ADDITIONAL_TASKS: [CHECK_WEEKLY_GARDEN],
             'Task Retry': 5,
             'Exit with Error': True,
         }
         self.config_description = {
-            'Which Weekly Boss to Teleport': 'From Top to Bottom, Starting with 1',
-            'Boss Level': "Choose the Lowest that Drop a Echo",
-            'Boss': 'Select boss profile (includes Combat Wait Time)',
-            'Combat Wait Time': 'Wait time before each combat (seconds), overrides Boss profile if set',
-            'Use Liberation': 'Do not use Liberation to Save Time',
-            'Switch to Healer after Combat': 'Better Chance to Keep Character Alive',
-            #
             'Which Tacet Suppression to Farm': 'The Tacet Suppression number in the F2 list.',
             'Tacet Suppression Count': 'farm Tacet Suppression N time(s), 60 stamina per time, set a large number to use all stamina',
             'Which Forgery Challenge to Farm': 'The Forgery Challenge number in the F2 list.',
@@ -62,11 +53,11 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
             'Material Selection': 'Resonator EXP / Weapon EXP / Shell Credit',
             'Simulation Challenge Count': 'farm Simulation Challenge N time(s), 40 stamina per time, set a large number to use all stamina',
             'Farm Nightmare Nest for Daily Echo': 'Farm 1 Echo from Nightmare Nest to complete Daily Task when needed.',
-            'Check Weekly Garden': 'After claiming daily rewards, check weekly Garden progress and run Garden Task '
-                                   'if 6000 points has not been reached.',
+            ADDITIONAL_TASKS: 'Select optional tasks. (1) Nightmare Nest: runs before stamina farming to help complete the daily task (2) Farm 4C Echo: runs before stamina farming if "advanced skill material mode" enabled, otherwise run afterward (3) other tasks: run afterward.',
             'Task Retry': 'retry time(s) for each task',
             'Exit with Error': 'exit game and app with exception raised when option [Exit After Task] checked'
         }
+        material_option_list = ['Resonator EXP', 'Weapon EXP', 'Shell Credit']
         stamina_farm_config_list = [
             'Which Tacet Suppression to Farm',
             'Tacet Suppression Count',
@@ -76,31 +67,6 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
             'Simulation Challenge Count',
         ]
         self.config_type = {
-            'Try to Farm Weekly-Limited Advanced Skill Material': {
-                'sub_configs': {
-                    True: [
-                        'Which Weekly Boss to Teleport',
-                        'Boss Level',
-                        'Boss',
-                        'Combat Wait Time',
-                        'Echo Pickup Method',
-                        'Use Liberation',
-                        'Switch to Healer after Combat',
-                    ],
-                }
-            },
-            'Boss': {
-                'type': "drop_down",
-                'options': FarmEchoTask.boss_list,
-            },
-            'Boss Level': {
-                'type': "drop_down",
-                'options': FarmEchoTask.boss_level,
-            },
-            'Echo Pickup Method': {
-                'type': "drop_down",
-                'options': FarmEchoTask.find_echo_method
-            },
             'Run Tacet or Forgery First': {
                 'type': 'drop_down',
                 'options': ['Tacet First', 'Forgery First'],
@@ -109,21 +75,25 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
                     'Forgery First': stamina_farm_config_list,
                 }
             },
-            'Auto Farm all Nightmare Nest': {
-                'sub_configs': {
-                    True: ['Farm Nightmare Nest for Daily Echo'],
-                    False: ['Farm Nightmare Nest for Daily Echo'],
-                }
-            },
             'Material Selection': {
                 'type': 'drop_down',
-                'options': ['Resonator EXP', 'Weapon EXP', 'Shell Credit']
+                'options': material_option_list
+            },
+            ADDITIONAL_TASKS: {
+                'type': 'multi_selection',
+                'options': [
+                    CHECK_WEEKLY_GARDEN,
+                    AUTO_FARM_NIGHTMARE_NEST,
+                    MERGE_ECHO_IF_DISCARDED_OVER_1000,
+                    TELEPORT_AND_FARM_4C_ECHO,
+                ],
             },
         }
         self.add_exit_after_config()
         self.description = 'open game, login, monthly card, mail, farm, activity, radio'
 
     def run(self):
+        self.validate_additional_tasks()
         try:
             #
             current_task = 'login_with_hot_update'
@@ -132,34 +102,15 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
             self.logged_in = False
             self.ensure_main(time_out=180)
             #
-            current_task = 'farm_advanced_skill_material'
-            self.info_set('current task', current_task)
-            for i in range(1, self.config.get('Task Retry') + 1):
-                try:
-                    self.info_set('farm advanced skill material', i)
-                    if self.config.get('Try to Farm Weekly-Limited Advanced Skill Material'):
-                        fec_config = self.config | {
-                            'Advanced Skill Material Mode': True,
-                            'Teleport to Boss': 'Weekly Challenge',
-                            'Repeat Farm Count': 3,  # useless
-                            'Which Boss Challenge to Teleport': 1,  # useless
-                        }
-                        self.get_task_by_class(FarmEchoTask).run(config = fec_config)
-                        self.ensure_main()
-                    break
-                except Exception as e:
-                    self.log_error(f'farm advanced skill material "{i}" failed\n{''.join(traceback.format_exception(e))}')
-                    self.screenshot(f'{datetime.now().strftime("%Y%m%d")}_DailyTask2_AdvancedSkillMaterial_Attempt_{i}')
-                    if (i >= self.config.get('Task Retry')):
-                        raise e
-            #
+            current_task = 'nightmare'
+            additional_tasks = self.config.get(ADDITIONAL_TASKS) or []
+            nightmare_all = AUTO_FARM_NIGHTMARE_NEST in additional_tasks
             _, daily_reward_ready = self.open_daily()
-            self.ensure_main()
-            nightmare_all = self.config.get('Auto Farm all Nightmare Nest')
-            nightmare_once = self.config.get('Farm Nightmare Nest for Daily Echo') and (not daily_reward_ready) and self.config.get('Tacet Suppression Count') <= 0
-            current_task = 'nightmare_all' if nightmare_all else 'nightmare_once'
-            self.info_set('current task', current_task)
-            if nightmare_all or nightmare_once:
+            need_nightmare = nightmare_all or (
+                    self.config.get('Farm Nightmare Nest for Daily Echo')
+                    and not daily_reward_ready
+            )
+            if need_nightmare:
                 self.log_info('farming ALL nightmare nests ...') if nightmare_all else self.log_info('farming ONE nightmare nest ...')
                 for i in range(1, self.config.get('Task Retry') + 1):
                     try:
@@ -182,6 +133,23 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
             else:
                 self.log_info('NO NEED to farm nightmare nest(s), skipped')
             #
+            if TELEPORT_AND_FARM_4C_ECHO in additional_tasks:
+                current_task = "farm_4c_with_weekly_material"
+                self.info_set('current task', current_task)
+                self.ensure_main()
+                for i in range(1, self.config.get('Task Retry') + 1):
+                    try:
+                        self.ensure_main()
+                        self.run_task_by_class(FarmEchoTask)
+                        self.sleep(1)
+                        break
+                    except Exception as e:
+                        self.log_error(f'farm 4c with weekly material: attempt "{i}" failed\n{''.join(traceback.format_exception(e))}')
+                        self.screenshot(f'{datetime.now().strftime("%Y%m%d")}_DailyTask2_WeeklyGarden_Attempt_{i}')
+                        self.ensure_main()
+                        if (i >= self.config.get('Task Retry')):
+                            self.log_error("未能完成 幻梦游园（周度游历），需要手动登陆游戏处理。", notify=True)
+            #
             def tacet():
                 nonlocal current_task
                 current_task = 'farm_tacet'
@@ -192,7 +160,7 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
                         self.get_task_by_class(TacetTask2).farm_tacet(config=self.config)
                         break
                     except Exception as e:
-                        self.log_error(f'farm tacet attempt "{i}" failed\n{''.join(traceback.format_exception(e))}')
+                        self.log_error(f'farm tacet: attempt "{i}" failed\n{''.join(traceback.format_exception(e))}')
                         self.screenshot(f'{datetime.now().strftime("%Y%m%d")}_DailyTask2_Tacet_Attempt_{i}')
                         if (i >= self.config.get('Task Retry')):
                             raise e
@@ -206,7 +174,7 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
                         self.get_task_by_class(ForgeryTask2).farm_forgery(config=self.config)
                         break
                     except Exception as e:
-                        self.log_error(f'farm forgery attempt "{i}" failed\n{''.join(traceback.format_exception(e))}')
+                        self.log_error(f'farm forgery: attempt "{i}" failed\n{''.join(traceback.format_exception(e))}')
                         self.screenshot(f'{datetime.now().strftime("%Y%m%d")}_DailyTask2_Forgery_Attempt_{i}')
                         if (i >= self.config.get('Task Retry')):
                             raise e
@@ -220,7 +188,7 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
                         self.get_task_by_class(SimulationTask2).farm_simulation(config=self.config)
                         break
                     except Exception as e:
-                        self.log_error(f'farm simulation attempt "{i}" failed\n{''.join(traceback.format_exception(e))}')
+                        self.log_error(f'farm simulation: attempt "{i}" failed\n{''.join(traceback.format_exception(e))}')
                         self.screenshot(f'{datetime.now().strftime("%Y%m%d")}_DailyTask2_Simulation_Attempt_{i}')
                         if (i >= self.config.get('Task Retry')):
                             raise e
@@ -239,7 +207,7 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
                     self.sleep(1)
                     break
                 except Exception as e:
-                    self.log_error(f'claim daily attempt "{i}" failed\n{''.join(traceback.format_exception(e))}')
+                    self.log_error(f'claim daily: attempt "{i}" failed\n{''.join(traceback.format_exception(e))}')
                     self.screenshot(f'{datetime.now().strftime("%Y%m%d")}_DailyTask2_ClaimDaily_Attempt_{i}')
                     self.ensure_main()
                     if (i >= self.config.get('Task Retry')):
@@ -254,7 +222,7 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
                     self.sleep(1)
                     break
                 except Exception as e:
-                    self.log_error(f'claim mail attempt "{i}" failed\n{''.join(traceback.format_exception(e))}')
+                    self.log_error(f'claim mail: attempt "{i}" failed\n{''.join(traceback.format_exception(e))}')
                     self.screenshot(f'{datetime.now().strftime("%Y%m%d")}_DailyTask2_ClaimMail_Attempt_{i}')
                     self.ensure_main()
                     if (i >= self.config.get('Task Retry')):
@@ -270,27 +238,44 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
                     self.sleep(1)
                     break
                 except Exception as e:
-                    self.log_error(f'claim millage attempt "{i}" failed\n{''.join(traceback.format_exception(e))}')
+                    self.log_error(f'claim millage: attempt "{i}" failed\n{''.join(traceback.format_exception(e))}')
                     self.screenshot(f'{datetime.now().strftime("%Y%m%d")}_DailyTask2_ClaimBattlePass_Attempt_{i}')
                     self.ensure_main()
                     if (i >= self.config.get('Task Retry')):
                         self.log_error("未能领取 版本奖励，需要手动登陆游戏处理。", notify=True)
             #
-            current_task = 'weekly_garden'
-            self.info_set('current task', current_task)
-            self.ensure_main()
-            for i in range(1, self.config.get('Task Retry') + 1):
-                try:
-                    self.ensure_main()
-                    self.check_weekly_garden()
-                    self.sleep(1)
-                    break
-                except Exception as e:
-                    self.log_error(f'weekly garden attempt "{i}" failed\n{''.join(traceback.format_exception(e))}')
-                    self.screenshot(f'{datetime.now().strftime("%Y%m%d")}_DailyTask2_WeeklyGarden_Attempt_{i}')
-                    self.ensure_main()
-                    if (i >= self.config.get('Task Retry')):
-                        self.log_error("未能完成 幻梦游园（周度游历），需要手动登陆游戏处理。", notify=True)
+            if CHECK_WEEKLY_GARDEN in additional_tasks:
+                current_task = 'weekly_garden'
+                self.info_set('current task', current_task)
+                self.ensure_main()
+                for i in range(1, self.config.get('Task Retry') + 1):
+                    try:
+                        self.ensure_main()
+                        self.check_weekly_garden()
+                        self.sleep(1)
+                        break
+                    except Exception as e:
+                        self.log_error(f'weekly garden: attempt "{i}" failed\n{''.join(traceback.format_exception(e))}')
+                        self.screenshot(f'{datetime.now().strftime("%Y%m%d")}_DailyTask2_WeeklyGarden_Attempt_{i}')
+                        self.ensure_main()
+                        if (i >= self.config.get('Task Retry')):
+                            self.log_error("未能完成 幻梦游园（周度游历），需要手动登陆游戏处理。", notify=True)
+            if MERGE_ECHO_IF_DISCARDED_OVER_1000 in additional_tasks:
+                current_task = 'discarded_echo'
+                self.info_set('current task', current_task)
+                self.ensure_main()
+                for i in range(1, self.config.get('Task Retry') + 1):
+                    try:
+                        self.ensure_main()
+                        self.check_discarded_echo()
+                        self.sleep(1)
+                        break
+                    except Exception as e:
+                        self.log_error(f'discarded echo: attempt "{i}" failed\n{''.join(traceback.format_exception(e))}')
+                        self.screenshot(f'{datetime.now().strftime("%Y%m%d")}_DailyTask2_WeeklyGarden_Attempt_{i}')
+                        self.ensure_main()
+                        if (i >= self.config.get('Task Retry')):
+                            self.log_error("未能完成 弃置声骸融合，需要手动登陆游戏处理。", notify=True)
             #
         except Exception as e:
             self.log_error(f'一条龙错误 | {current_task} | {str(e)}\n{''.join(traceback.format_exception(e))}')
@@ -299,18 +284,60 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
             if not self.config.get('Exit with Error'):
                 raise e
 
+    def validate_additional_tasks(self):
+        additional_tasks = self.config.get(ADDITIONAL_TASKS) or []
+        if TELEPORT_AND_FARM_4C_ECHO in additional_tasks:
+            farm_echo_task = self.get_task_by_class(FarmEchoTask)
+            if farm_echo_task.config.get('Teleport to Boss', 'No') == 'No':
+                raise Exception(
+                    self.tr(
+                        'Teleport and Farm 4C Echo requires "Teleport to Boss" to be enabled in Farm Echo Task.'
+                    )
+                )
+        if AUTO_FARM_NIGHTMARE_NEST in additional_tasks:
+            nightmare_task = self.get_task_by_class(NightmareNestTask)
+            if not nightmare_task.config.get('Which to Farm'):
+                raise Exception(
+                    self.tr(
+                        'Auto Farm all Nightmare Nest requires at least one "Which to Farm" option.'
+                    )
+                )
+        return True
+
     def check_weekly_garden(self):
-        if not self.config.get('Check Weekly Garden', True):
-            return
         self.info_set('current task', 'check weekly garden')
         self.log_info('check weekly garden')
-        garden_task = self.get_task_by_class(GardenTask)
-        garden_task.open_garden_weekly_page()
-        if garden_task.is_weekly_garden_completed():
-            self.log_info('weekly garden already completed')
-            return
-        self.log_info('weekly garden not completed, run GardenTask')
-        self.run_task_by_class(GardenTask)
+        try:
+            garden_task = self.get_task_by_class(GardenTask)
+            garden_task.open_garden_weekly_page()
+            if garden_task.is_weekly_garden_completed():
+                self.log_info('weekly garden already completed')
+                return
+            self.log_info('weekly garden not completed, run GardenTask')
+            self.run_task_by_class(GardenTask)
+        except TaskDisabledException:
+            raise
+        except Exception as e:
+            self.log_error("GardenTask Failed", e)
+            self.screenshot('GardenTask')
+            self.ensure_main(time_out=180)
+
+    def check_discarded_echo(self):
+        self.info_set('current task', 'check discarded echo')
+        self.log_info('check discarded echo')
+        merge_echo_task = self.get_task_by_class(MergeEchoTask)
+        old_notify_if_not_enough = merge_echo_task.notify_if_not_enough
+        try:
+            merge_echo_task.notify_if_not_enough = False
+            self.run_task_by_class(MergeEchoTask)
+        except TaskDisabledException:
+            raise
+        except Exception as e:
+            self.log_error("MergeEchoTask Failed", e)
+            self.screenshot('MergeEchoTask')
+            self.ensure_main(time_out=180)
+        finally:
+            merge_echo_task.notify_if_not_enough = old_notify_if_not_enough
 
     def claim_battle_pass(self):
         self.log_info('battle pass')
@@ -321,10 +348,10 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
         if not self.wait_ocr(0.2, 0.13, 0.32, 0.22, match=re.compile(r'\d+'), settle_time=1, raise_if_not_found=False):
             self.log_error('can not battle pass, maybe ended')
         else:
-            self.click(0.04, 0.3, after_sleep=1)
-            self.click(0.68, 0.91, after_sleep=3)
-            self.click(0.04, 0.17, after_sleep=2)
-            self.click(0.68, 0.91, after_sleep=2)
+            self.click_relative(0.04, 0.3, after_sleep=1)
+            self.click_relative(0.68, 0.91, hcenter=True, after_sleep=3)
+            self.click_relative(0.04, 0.17, after_sleep=2)
+            self.click_relative(0.68, 0.91, hcenter=True, after_sleep=2)
             self.wait_ocr(0.2, 0.13, 0.32, 0.22, match=re.compile(r'\d+'),
                           post_action=lambda: self.click(0.68, 0.91, after_sleep=1), settle_time=1,
                           raise_if_not_found=False)

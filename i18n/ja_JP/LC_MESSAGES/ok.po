@@ -576,6 +576,12 @@ msgstr "無音区を先に実行"
 msgid "Forgery First"
 msgstr "凝素領域を先に実行"
 
+msgid "Select optional tasks. (1) Nightmare Nest: runs before stamina farming to help complete the daily task (2) Farm 4C Echo: runs before stamina farming if \"advanced skill material mode\" enabled, otherwise run afterward (3) other tasks: run afterward."
+msgstr "任意タスクを選択します。(1) Nightmare Nest: 日課完了を補助するためスタミナ周回前に実行 (2) Farm 4C Echo: \"advanced skill material mode\" が有効な場合はスタミナ周回前に実行し、それ以外は後で実行 (3) その他のタスク: 後で実行します。"
+
+msgid "Teleport and Farm 4C Echo, Support Weekly-Limited Advanced Skill Material"
+msgstr "テレポートして4C音骸を周回、週制限付き上級スキル素材に対応"
+
 msgid "Task Retry"
 msgstr "タスクリトライ"
 
@@ -587,6 +593,15 @@ msgstr "エラー時に終了"
 
 msgid "exit game and app with exception raised when option [Exit After Task] checked"
 msgstr "[Exit After Task] が選択されている場合、例外発生時にゲームとアプリを終了します"
+
+msgid "⭐ Farm 4C Echo in Dungeon/World"
+msgstr "⭐ ダンジョン/フィールドでコスト4音骸を周回"
+
+msgid "Advanced Skill Material Mode"
+msgstr "上級スキル素材モード"
+
+msgid "If enabled, execute ONLY when all of the following conditions are met: (1) option \"Teleport to Boss\" is set to \"Weekly Challenge\"; (2) Advanced Skill Material claim count has not reached the weekly limit; (3) stamina is sufficient to farm once. At this time, option \"Repeat Farm Count\" will be ignored and total count will be determined by weekly limit and stamina remaining."
+msgstr "有効にすると、次の3つの条件をすべて満たす場合のみ実行します：(1) オプション\"Teleport to Boss\"が\"Weekly Challenge\"に設定されている (2) 上級スキル素材の受取回数が週上限に達していない (3) 1回ファームするのに十分なスタミナがある。このとき、オプション\"Repeat Farm Count\"は無視され、実行回数は週上限と残りスタミナによって決まります。"
 
 msgid "⭐ Tacet Suppression"
 msgstr "⭐ 無音区"
@@ -855,15 +870,6 @@ msgstr "テレポートするボスチャレンジ"
 
 msgid "From Top to Bottom, Starting with 1"
 msgstr "上から下へ、1から開始"
-
-msgid "Advanced Skill Material Mode"
-msgstr "上級スキル素材モード"
-
-msgid "If enabled, execute ONLY when all of the following conditions are met: (1) option \"Teleport to Boss\" is set to \"Weekly Challenge\"; (2) Advanced Skill Material claim count has not reached the weekly limit; (3) stamina is sufficient to farm once. At this time, option \"Repeat Farm Count\" will be ignored and total count will be determined by weekly limit and stamina remaining."
-msgstr "有効にすると、次の3つの条件をすべて満たす場合のみ実行します：(1) オプション\"Teleport to Boss\"が\"Weekly Challenge\"に設定されている (2) 上級スキル素材の受取回数が週上限に達していない (3) 1回ファームするのに十分なスタミナがある。このとき、オプション\"Repeat Farm Count\"は無視され、実行回数は週上限と残りスタミナによって決まります。"
-
-msgid "Try to Farm Weekly-Limited Advanced Skill Material"
-msgstr "週制限付き上級スキル素材の周回を試行"
 
 msgid "Characters"
 msgstr "キャラクター"

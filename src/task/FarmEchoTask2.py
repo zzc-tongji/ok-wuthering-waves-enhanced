@@ -750,4 +750,4 @@ from ok import run_task
 from config import config
 
 if __name__ == "__main__":
-    run_task(config, task=FarmEchoTask, debug=True)
+    run_task(config, task=FarmEchoTask2, debug=True)
