@@ -6,7 +6,7 @@ from qfluentwidgets import FluentIcon
 
 from ok import Logger, TaskDisabledException
 from src.task.BaseWWTask import number_re
-from src.task.FarmEchoTask import FarmEchoTask
+from src.task.FarmEchoTask2 import FarmEchoTask2
 from src.task.ForgeryTask2 import ForgeryTask2
 from src.task.GardenTask import GardenTask
 from src.task.MergeEchoTask import MergeEchoTask
@@ -92,8 +92,9 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
         self.description = 'open game, login, monthly card, mail, farm, activity, radio'
 
     def run(self):
-        self.validate_additional_tasks()
         try:
+            self.validate_additional_tasks()
+            additional_tasks = self.config.get(ADDITIONAL_TASKS) or []
             #
             current_task = 'login_with_hot_update'
             self.info_set('current task', current_task)
@@ -102,7 +103,6 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
             self.ensure_main(time_out=180)
             #
             current_task = 'nightmare'
-            additional_tasks = self.config.get(ADDITIONAL_TASKS) or []
             nightmare_all = AUTO_FARM_NIGHTMARE_NEST in additional_tasks
             _, daily_reward_ready = self.open_daily()
             need_nightmare = nightmare_all or (
@@ -139,7 +139,7 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
                 for i in range(1, self.config.get('Task Retry') + 1):
                     try:
                         self.ensure_main()
-                        self.run_task_by_class(FarmEchoTask)
+                        self.run_task_by_class(FarmEchoTask2)
                         self.sleep(1)
                         break
                     except Exception as e:
@@ -286,7 +286,7 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
     def validate_additional_tasks(self):
         additional_tasks = self.config.get(ADDITIONAL_TASKS) or []
         if TELEPORT_AND_FARM_4C_ECHO in additional_tasks:
-            farm_echo_task = self.get_task_by_class(FarmEchoTask)
+            farm_echo_task = self.get_task_by_class(FarmEchoTask2)
             if farm_echo_task.config.get('Teleport to Boss', 'No') == 'No':
                 raise Exception(
                     self.tr(
