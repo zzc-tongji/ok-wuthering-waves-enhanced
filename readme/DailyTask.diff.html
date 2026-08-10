@@ -66,8 +66,8 @@
           <path d="M6 9H3V7h3V4l5 4-5 4V9z m8-7v12c0 0.55-0.45 1-1 1H1c-0.55 0-1-0.45-1-1V2c0-0.55 0.45-1 1-1h12c0.55 0 1 0.45 1 1z m-1 0H1v12h12V2z"></path>
       </svg>      <a href="#d2h-939507" class="d2h-file-name">src/task/{DailyTask.py → DailyTask2.py}</a>
       <span class="d2h-file-stats">
-          <span class="d2h-lines-added">+229</span>
-          <span class="d2h-lines-deleted">-86</span>
+          <span class="d2h-lines-added">+232</span>
+          <span class="d2h-lines-deleted">-89</span>
       </span>
     </span>
 </li>
@@ -176,13 +176,13 @@
         </div>
     </td>
 </tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
+    <td class="d2h-code-side-linenumber d2h-del d2h-change">
       6
     </td>
-    <td class="d2h-cntx">
+    <td class="d2h-del d2h-change">
         <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">from src.task.FarmEchoTask import FarmEchoTask</span>
+            <span class="d2h-code-line-prefix">-</span>
+            <span class="d2h-code-line-ctn">from src.task.<del>FarmEchoTask</del> import <del>FarmEchoTask</del></span>
         </div>
     </td>
 </tr><tr>
@@ -883,7 +883,7 @@
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-info"></td>
     <td class="d2h-info">
-        <div class="d2h-code-side-line">@@ -72,68 +89,199 @@</div>
+        <div class="d2h-code-side-line">@@ -72,73 +89,204 @@</div>
     </td>
 </tr><tr>
     <td class="d2h-code-side-linenumber d2h-cntx">
@@ -946,13 +946,13 @@
         </div>
     </td>
 </tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
+    <td class="d2h-code-side-linenumber d2h-del d2h-change">
       78
     </td>
-    <td class="d2h-cntx">
+    <td class="d2h-del d2h-change">
         <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">        self.validate_additional_tasks()</span>
+            <span class="d2h-code-line-prefix">-</span>
+            <span class="d2h-code-line-ctn">        <del>self.validate_additional_tasks()</del></span>
         </div>
     </td>
 </tr><tr>
@@ -972,7 +972,7 @@
     <td class="d2h-del d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">-</span>
-            <span class="d2h-code-line-ctn"><del>        WWOneTimeTask.run(self)</del></span>
+            <span class="d2h-code-line-ctn"><del>        WWOneTimeTask</del>.<del>run</del>(<del>self</del>)</span>
         </div>
     </td>
 </tr><tr>
@@ -982,7 +982,7 @@
     <td class="d2h-del d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">-</span>
-            <span class="d2h-code-line-ctn"><del>        self.logged_in</del> = <del>False</del></span>
+            <span class="d2h-code-line-ctn"><del>        self.logged_in = False</del></span>
         </div>
     </td>
 </tr><tr>
@@ -992,7 +992,7 @@
     <td class="d2h-del d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">-</span>
-            <span class="d2h-code-line-ctn"><del>        </del>self.<del>ensure_main</del>(<del>time_out=180</del>)</span>
+            <span class="d2h-code-line-ctn"><del>        self.ensure_main(time_out</del>=<del>180)</del></span>
         </div>
     </td>
 </tr><tr>
@@ -1012,7 +1012,7 @@
     <td class="d2h-del d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">-</span>
-            <span class="d2h-code-line-ctn"><del>        additional_tasks = </del>self.<del>config.get(ADDITIONAL_TASKS)</del> <del>or</del> <del>[]</del></span>
+            <span class="d2h-code-line-ctn"><del>        additional_tasks = self</del>.<del>config.get</del>(<del>ADDITIONAL_TASKS</del>)<del> or []</del></span>
         </div>
     </td>
 </tr><tr>
@@ -1022,7 +1022,7 @@
     <td class="d2h-del d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">-</span>
-            <span class="d2h-code-line-ctn"><del>        condition1 </del>=<del> AUTO_FARM_NIGHTMARE_NEST in additional_tasks</del></span>
+            <span class="d2h-code-line-ctn"><del>        condition1</del> = <del>AUTO_FARM_NIGHTMARE_NEST in additional_tasks</del></span>
         </div>
     </td>
 </tr><tr>
@@ -1032,7 +1032,7 @@
     <td class="d2h-del d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">-</span>
-            <span class="d2h-code-line-ctn"><del>        condition2 = self.config.get(&#x27;Farm Nightmare Nest for Daily Echo&#x27;)</del></span>
+            <span class="d2h-code-line-ctn"><del>        condition2 = </del>self.<del>config.get</del>(<del>&#x27;Farm Nightmare Nest for Daily Echo&#x27;</del>)</span>
         </div>
     </td>
 </tr><tr>
@@ -1052,7 +1052,7 @@
     <td class="d2h-del d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">-</span>
-            <span class="d2h-code-line-ctn"><del>        used_stamina,</del> <del>daily_reward_ready </del>= self.<del>open_daily</del>()</span>
+            <span class="d2h-code-line-ctn"><del>        used_stamina,</del> <del>daily_reward_ready </del>= <del>self.open_daily()</del></span>
         </div>
     </td>
 </tr><tr>
@@ -2976,6 +2976,56 @@
         </div>
     </td>
 </tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      140
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">        if TELEPORT_AND_FARM_4C_ECHO in additional_tasks:</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-del d2h-change">
+      141
+    </td>
+    <td class="d2h-del d2h-change">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">-</span>
+            <span class="d2h-code-line-ctn">            farm_echo_task = self.get_task_by_class(<del>FarmEchoTask</del>)</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      142
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">            if farm_echo_task.config.get(&#x27;Teleport to Boss&#x27;, &#x27;No&#x27;) == &#x27;No&#x27;:</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      143
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">                raise Exception(</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      144
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">                    self.tr(</span>
+        </div>
+    </td>
+</tr><tr>
     <td class="d2h-code-side-linenumber d2h-info"></td>
     <td class="d2h-info">
         <div class="d2h-code-side-line">@@ -155,16 +303,6 @@</div>
@@ -3395,13 +3445,13 @@
         </div>
     </td>
 </tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
+    <td class="d2h-code-side-linenumber d2h-ins d2h-change">
       9
     </td>
-    <td class="d2h-cntx">
+    <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">from src.task.FarmEchoTask import FarmEchoTask</span>
+            <span class="d2h-code-line-prefix">+</span>
+            <span class="d2h-code-line-ctn">from src.task.<ins>FarmEchoTask2</ins> import <ins>FarmEchoTask2</ins></span>
         </div>
     </td>
 </tr><tr>
@@ -4165,13 +4215,13 @@
         </div>
     </td>
 </tr><tr>
-    <td class="d2h-code-side-linenumber d2h-cntx">
+    <td class="d2h-code-side-linenumber d2h-ins d2h-change">
       95
     </td>
-    <td class="d2h-cntx">
+    <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
-            <span class="d2h-code-line-prefix">&nbsp;</span>
-            <span class="d2h-code-line-ctn">        self.validate_additional_tasks()</span>
+            <span class="d2h-code-line-prefix">+</span>
+            <span class="d2h-code-line-ctn">        <ins>try:</ins></span>
         </div>
     </td>
 </tr><tr>
@@ -4181,7 +4231,7 @@
     <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn"><ins>        try:</ins></span>
+            <span class="d2h-code-line-ctn"><ins>            self.validate_additional_tasks()</ins></span>
         </div>
     </td>
 </tr><tr>
@@ -4191,7 +4241,7 @@
     <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn"><ins>            #</ins></span>
+            <span class="d2h-code-line-ctn"><ins>            additional_tasks = self</ins>.<ins>config.get</ins>(<ins>ADDITIONAL_TASKS</ins>)<ins> or []</ins></span>
         </div>
     </td>
 </tr><tr>
@@ -4201,7 +4251,7 @@
     <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn"><ins>            current_task</ins> = <ins>&#x27;login_with_hot_update&#x27;</ins></span>
+            <span class="d2h-code-line-ctn"><ins>            #</ins></span>
         </div>
     </td>
 </tr><tr>
@@ -4211,7 +4261,7 @@
     <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn"><ins>            </ins>self.<ins>info_set</ins>(<ins>&#x27;current task&#x27;, current_task</ins>)</span>
+            <span class="d2h-code-line-ctn"><ins>            current_task </ins>=<ins> &#x27;login_with_hot_update&#x27;</ins></span>
         </div>
     </td>
 </tr><tr>
@@ -4221,7 +4271,7 @@
     <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn"><ins>            WWOneTimeTask.run(self)</ins></span>
+            <span class="d2h-code-line-ctn"><ins>            self.info_set(&#x27;current task&#x27;, current_task)</ins></span>
         </div>
     </td>
 </tr><tr>
@@ -4231,7 +4281,7 @@
     <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn"><ins>            </ins>self.<ins>logged_in</ins> <ins>=</ins> <ins>False</ins></span>
+            <span class="d2h-code-line-ctn"><ins>            WWOneTimeTask</ins>.<ins>run</ins>(<ins>self</ins>)</span>
         </div>
     </td>
 </tr><tr>
@@ -4241,7 +4291,7 @@
     <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn"><ins>            self.ensure_main(time_out</ins>=<ins>180)</ins></span>
+            <span class="d2h-code-line-ctn"><ins>            self.logged_in</ins> = <ins>False</ins></span>
         </div>
     </td>
 </tr><tr>
@@ -4251,7 +4301,7 @@
     <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn"><ins>            #</ins></span>
+            <span class="d2h-code-line-ctn"><ins>            </ins>self.<ins>ensure_main</ins>(<ins>time_out=180</ins>)</span>
         </div>
     </td>
 </tr><tr>
@@ -4261,7 +4311,7 @@
     <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn"><ins>            current_task = &#x27;nightmare&#x27;</ins></span>
+            <span class="d2h-code-line-ctn"><ins>            #</ins></span>
         </div>
     </td>
 </tr><tr>
@@ -4271,7 +4321,7 @@
     <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn"><ins>            additional_tasks</ins> = self.<ins>config.get</ins>(<ins>ADDITIONAL_TASKS</ins>)<ins> or []</ins></span>
+            <span class="d2h-code-line-ctn"><ins>            current_task</ins> = <ins>&#x27;nightmare&#x27;</ins></span>
         </div>
     </td>
 </tr><tr>
@@ -4741,7 +4791,7 @@
     <td class="d2h-ins d2h-change">
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">+</span>
-            <span class="d2h-code-line-ctn"><ins>                        </ins>self.<ins>run_task_by_class</ins>(<ins>FarmEchoTask</ins>)</span>
+            <span class="d2h-code-line-ctn"><ins>                        </ins>self.<ins>run_task_by_class</ins>(<ins>FarmEchoTask2</ins>)</span>
         </div>
     </td>
 </tr><tr>
@@ -6192,6 +6242,56 @@
         <div class="d2h-code-side-line">
             <span class="d2h-code-line-prefix">&nbsp;</span>
             <span class="d2h-code-line-ctn">        additional_tasks = self.config.get(ADDITIONAL_TASKS) or []</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      288
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">        if TELEPORT_AND_FARM_4C_ECHO in additional_tasks:</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-ins d2h-change">
+      289
+    </td>
+    <td class="d2h-ins d2h-change">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">+</span>
+            <span class="d2h-code-line-ctn">            farm_echo_task = self.get_task_by_class(<ins>FarmEchoTask2</ins>)</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      290
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">            if farm_echo_task.config.get(&#x27;Teleport to Boss&#x27;, &#x27;No&#x27;) == &#x27;No&#x27;:</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      291
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">                raise Exception(</span>
+        </div>
+    </td>
+</tr><tr>
+    <td class="d2h-code-side-linenumber d2h-cntx">
+      292
+    </td>
+    <td class="d2h-cntx">
+        <div class="d2h-code-side-line">
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+            <span class="d2h-code-line-ctn">                    self.tr(</span>
         </div>
     </td>
 </tr><tr>
