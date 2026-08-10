@@ -4,7 +4,7 @@
 
 ### 简介
 
-在保留 [原版 ok-ww](https://github.com/ok-oldking/ok-wuthering-waves) 全部功能的基础上，**添加新版日常一条龙任务，增加任务鲁棒性和日志可读性，方便无人值守运行和调试。**
+在保留 [原版 ok-ww](https://github.com/ok-oldking/ok-wuthering-waves) 全部功能的基础上，**添加新版日常每日任务，增加任务鲁棒性和日志可读性，方便无人值守运行和调试。**
 
 代码变更：https://github.com/zzc-tongji/ok-ww-enhanced/compare/master..main?diff=split 。
 
@@ -37,14 +37,14 @@
   - 启用后，选项 "刷多少次" 将会被无视，实际刷取次数取决于 每周上限 和 剩余体力。
   - 代码变更报告：[FarmEchoTask.diff.html](https://htmlpreview.github.io/?https://raw.githubusercontent.com/zzc-tongji/ok-ww-enhanced/refs/heads/main/readme/FarmEchoTask.diff.html) 。
 
-#### 新版一条龙任务
+#### 新版每日任务
 
 - 采用新版体力任务（无音区、凝素领域、模拟领域）。支持每种体力任务独立设置刷取次数（支持 跳过刷取 和 刷完所有体力）。
 - 采用新版刷4C声骸任务。如果启用 高级技能材料模式 则在 新版体力任务 前执行。
 - 支持设置重试次数（对每个任务分别生效）。若重试次数用尽也无法完成，则记录日志并 **截图**。
 - 日志文件 `./logs/ok-script.log` 优化：
   - 如果某些任务无法完成，会包含文本 `未完成`，以便后续处理（例如发送通知）。
-  - 在出现异常的情况下，会包含文本 `一条龙错误` 和错误堆栈，以便后续处理。
+  - 在出现异常的情况下，会包含文本 `每日任务错误` 和错误堆栈，以便后续处理。
 - 新版 [DailyTask2.py](./src/task/DailyTask2.py) 相比原版 [DailyTask.py](./src/task/DailyTask.py) 的改动：
   - 相比原版，新版增加了任务重试、异常日志和异常截图。
   - 在出现异常的情况下：新版可以设置是否退出程序，原版不会退出程序。
@@ -63,11 +63,11 @@
 ```pwsh
 cd "<ok-ww-e-installation-directory>\data\apps\ok-ww-e\working"
 
-# 启动后自动执行第1个任务（新版日常一条龙），并在任务完成后退出程序。
+# 启动后自动执行第1个任务（新版每日任务），并在任务完成后退出程序。
 ok-ww-e.exe -t 1 -e
 
-# 启动后自动执行第5个任务（原版日常一条龙），并在任务完成后退出程序。
-ok-ww-e.exe -t 5 -e
+# 启动后自动执行第6个任务（原版每日任务），并在任务完成后退出程序。
+ok-ww-e.exe -t 6 -e
 ```
 
 *   `-t` 或 `--task` - 启动后自动执行第 N 个任务。

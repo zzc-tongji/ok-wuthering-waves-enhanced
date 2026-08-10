@@ -604,7 +604,7 @@ msgid "Combat Wait Time"
 msgstr "Tiempo de Espera de Combate (seg)"
 
 msgid "⭐ Daily Task"
-msgstr "⭐ Tarea Diaria"
+msgstr "⭐ Tarea diaria"
 
 msgid "open game, login, monthly card, mail, farm, activity, radio"
 msgstr "abrir juego, iniciar sesión, pase mensual, correo, farmear, actividad, radio"

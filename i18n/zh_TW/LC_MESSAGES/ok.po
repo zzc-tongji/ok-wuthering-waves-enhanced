@@ -560,7 +560,7 @@ msgid "Combat Wait Time"
 msgstr "戰鬥開始前等待時間(秒)"
 
 msgid "⭐ Daily Task"
-msgstr "⭐ 日常一條龍"
+msgstr "⭐ 每日任務"
 
 msgid "open game, login, monthly card, mail, farm, activity, radio"
 msgstr "啟動, 月卡, 郵件, 刷體力, 活躍度 (未完成不報錯), 先約電台"

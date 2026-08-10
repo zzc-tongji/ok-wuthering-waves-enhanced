@@ -562,7 +562,7 @@ msgid "Combat Wait Time"
 msgstr "전투 대기 시간 (초)"
 
 msgid "⭐ Daily Task"
-msgstr "⭐ 일일 임무"
+msgstr "⭐ 일일 작업"
 
 msgid "open game, login, monthly card, mail, farm, activity, radio"
 msgstr "게임 실행, 로그인, 월정액 카드, 우편, 파밍, 활동도, 라디오"

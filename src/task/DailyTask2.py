@@ -277,7 +277,7 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
                             self.log_error("未能完成 弃置声骸融合，需要手动登陆游戏处理。", notify=True)
             #
         except Exception as e:
-            self.log_error(f'一条龙错误 | {current_task} | {str(e)}\n{''.join(traceback.format_exception(e))}')
+            self.log_error(f'每日任务错误 | {current_task} | {str(e)}\n{''.join(traceback.format_exception(e))}')
             self.screenshot(f'{datetime.now().strftime("%Y%m%d")}_DailyTask2_Error')
             #
             if not self.config.get('Exit with Error'):
