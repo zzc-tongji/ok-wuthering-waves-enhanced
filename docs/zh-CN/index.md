@@ -1,147 +1,30 @@
-# ok-ww 增强版
-
-[English](README_en.md) | 中文 | [日本語](README_ja.md)
-
-### 简介
-
-在保留 [原版 ok-ww](https://github.com/ok-oldking/ok-wuthering-waves) 全部功能的基础上，**添加新版日常一条龙任务，增加任务鲁棒性和日志可读性，方便无人值守运行和调试。**
-
-代码变更：https://github.com/zzc-tongji/ok-ww-enhanced/compare/master..main?diff=split 。
-
-构建方法变更：[build.diff.html](https://htmlpreview.github.io/?https://raw.githubusercontent.com/zzc-tongji/ok-ww-enhanced/refs/heads/main/readme/build.diff.html) 。
-
-### 新功能
-
-所有新增功能用⭐标出。
-
-![alt text](readme/enhanced.001.png)
-
-![alt text](readme/enhanced.002.png)
-
-#### 新版体力任务（无音区、凝素领域、模拟领域）
-
-- 支持设置刷取次数：
-  - 如不需要刷取，设 0 。如需刷完所有体力，设一个大数。
-  - 刷取次数以1倍（最低）体力计算。支持2倍体力刷取副本（相应刷取次数记为2）。
-  - 实现方式是注入 use_stamina 函数。这是注入前后的对比 [use_stamina.diff.html](https://htmlpreview.github.io/?https://raw.githubusercontent.com/zzc-tongji/ok-ww-enhanced/refs/heads/main/readme/use_stamina.diff.html) 。
-
-#### 新版一条龙任务
-
-- 采用新版体力任务（无音区、凝素领域、模拟领域）。支持每种体力任务独立设置刷取次数（支持 跳过刷取 和 刷完所有体力）。
-- 支持设置重试次数（对每个任务分别生效）。若重试次数用尽也无法完成，则记录日志并 **截图**。
-- 日志文件 `./logs/ok-script.log` 优化：
-  - 如果某些任务无法完成，会包含文本 `未完成`，以便后续处理（例如发送通知）。
-  - 在出现异常的情况下，会包含文本 `一条龙错误` 和错误堆栈，以便后续处理。
-- 新版 [DailyTask2.py](./src/task/DailyTask2.py) 相比原版 [DailyTask.py](./src/task/DailyTask.py) 的改动：
-  - 相比原版，新版增加了任务重试、异常日志和异常截图。
-  - 在出现异常的情况下：新版可以设置是否退出程序，原版不会退出程序。
-  - 代码变更报告：[DailyTask.diff.html](https://htmlpreview.github.io/?https://raw.githubusercontent.com/zzc-tongji/ok-ww-enhanced/refs/heads/main/readme/DailyTask.diff.html) 。
-
-### 运行方法
-
-#### GUI 运行
-
-从 [Release](https://github.com/zzc-tongji/ok-wuthering-waves-enhanced/releases) 下载最新的 `ok-ww-e-win32-Global-setup.exe` 然后双击安装。
-
-#### CLI 运行
-
-从 [Release](https://github.com/zzc-tongji/ok-wuthering-waves-enhanced/releases) 下载最新的 `ok-ww-e-win32-Global-setup.exe` 然后双击安装。
-
-```pwsh
-cd "<ok-ww-e-installation-directory>\data\apps\ok-ww-e\working"
-
-# 启动后自动执行第1个任务（新版日常一条龙），并在任务完成后退出程序。
-ok-ww-e.exe -t 1 -e
-
-# 启动后自动执行第5个任务（原版日常一条龙），并在任务完成后退出程序。
-ok-ww-e.exe -t 5 -e
-```
-
-*   `-t` 或 `--task` - 启动后自动执行第 N 个任务。
-*   `1` - 任务列表（[config.py -> onetime_tasks](https://github.com/zzc-tongji/ok-wuthering-waves-enhanced/blob/main/config.py#L165)）中的第1个。
-*   `-e` 或 `--exit` - 任务执行完毕后自动退出程序。
-
-#### 源码运行
-
-建议将依赖安装到 [miniconda](https://www.anaconda.com/docs/getting-started/miniconda/main) 虚拟环境。
-
-``` powershell
-# requirement
-conda create --name okww python=3.12 pip=25.0
-pip install -r requirements.txt --upgrade
-pip install -r requirements-dev.txt --upgrade
-
-# release
-python main.py
-
-# debug
-python main_debug.py
-```
-
-#### 使用 VSCode 进行开发调试
-
-https://github.com/ok-oldking/ok-wuthering-waves/discussions/934
-
-#### COCO 特征预览
-
-图像特征 `assets/coco_annotations.json` 可以通过下列链接预览（持续更新）：
-
-https://htmlpreview.github.io/?https://raw.githubusercontent.com/zzc-tongji/ok-ww-e-coco-preview/refs/heads/main/data/index.html
-
-### 小贴士
-
-- ok-ww-e 可以进行游戏热更新重启，但是需要关闭 `设置 / 基本设置 / 游戏退出时，自动退出应用`。 
-- 如果发现 ok-ww-e 无法启动游戏，请先尝试以管理员身份启动。如果无效，请通过管理员模式的 cmd 命令行启动 `cmd /c start "" ok-ww-e.exe`。
-
-### 免责申明
-
-本软件是一个外部工具，旨在自动化鸣潮的游戏玩法。它仅通过现有用户界面与游戏交互，并遵守相关法律法规。该软件包旨在简化用户与游戏的交互，不会破坏游戏平衡或提供不公平优势，也不会修改任何游戏文件或代码。
-
-本软件开源、免费，仅供个人学习交流使用，仅限于个人游戏账号，不得用于任何商业或营利性目的。开发者团队拥有本项目的最终解释权。使用本软件产生的所有问题与本项目及开发者团队无关。若您发现商家使用本软件进行代练并收费，这是商家的个人行为，本软件不授权用于代练服务，产生的问题及后果与本软件无关。本软件不授权任何人进行售卖，售卖的软件可能被加入恶意代码，导致游戏账号或电脑资料被盗，与本软件无关。
-
-请注意，根据库洛的《鸣潮》公平运营声明:
-
-```
-严禁利用任何第三方工具破坏游戏体验。
-我们将严厉打击使用外挂、加速器、作弊软件、宏脚本等违规工具的行为，这些行为包括但不限于自动挂机、技能加速、无敌模式、瞬移、修改游戏数据等操作。
-一经查证，我们将视违规情况和次数，采取包括但不限于扣除违规收益、冻结或永久封禁游戏账号等措施。
-```
-
-------
-
-# 原版 ok-ww 的 README
-
-------
-
 <div align="center">
   <h1 align="center">
-    <img src="icons/icon.png" width="200" alt="ok-ww logo"/>
+    <img src="https://raw.githubusercontent.com/ok-oldking/ok-wuthering-waves/master/icons/icon.png" width="200" alt="ok-ww logo"/>
     <br/>
     ok-ww
-  </h1>
-
+  </h1> 
+  
   <p>
     一个基于图像识别的鸣潮自动化程序，支持后台运行，基于 <a href="https://ok-script.com">ok-script</a> 开发。
     <br />
     An image-recognition-based automation tool for Wuthering Waves, with background mode support, developed with <a href="https://ok-script.com">ok-script</a>.
   </p>
-
+  
   <p><i>通过 Windows 接口模拟用户进行操作，无内存读取、无文件修改</i></p>
 </div>
 
 <!-- Badges -->
-<div align="center">
-
-![平台](https://img.shields.io/badge/platform-Windows-blue)
-[![GitHub release](https://img.shields.io/github/v/release/ok-oldking/ok-wuthering-waves)](https://github.com/ok-oldking/ok-wuthering-waves/releases)
-[![总下载量](https://img.shields.io/github/downloads/ok-oldking/ok-wuthering-waves/total)](https://github.com/ok-oldking/ok-wuthering-waves/releases)
-[![Discord](https://img.shields.io/discord/296598043787132928?color=5865f2&label=%20Discord)](https://discord.gg/vVyCatEBgA)
-
+<div class="badge-row">
+  <img src="https://img.shields.io/badge/platform-Windows-blue" alt="平台" />
+  <a href="https://github.com/ok-oldking/ok-wuthering-waves/releases"><img src="https://img.shields.io/github/v/release/ok-oldking/ok-wuthering-waves" alt="GitHub release" /></a>
+  <a href="https://github.com/ok-oldking/ok-wuthering-waves/releases"><img src="https://img.shields.io/github/downloads/ok-oldking/ok-wuthering-waves/total" alt="总下载量" /></a>
+  <a href="https://discord.gg/vVyCatEBgA"><img src="https://img.shields.io/discord/296598043787132928?color=5865f2&amp;label=%20Discord" alt="Discord" /></a>
 </div>
 
 <p align="center"><strong>官方网站：</strong> <a href="https://ok-script.com/ok-ww">https://ok-script.com/ok-ww</a></p>
 
-### [English](docs/en/index.md) | 中文说明 | [繁體中文](docs/zh-TW/index.md) | [日本語](docs/ja/index.md)
+### [English](../en/index.md) | 简体中文 | [繁體中文](../zh-TW/index.md) | [日本語](../ja/index.md)
 
 **演示与教程:** [![YouTube](https://img.shields.io/badge/YouTube-%23FF0000.svg?style=for-the-badge&logo=YouTube&logoColor=white)](https://youtu.be/h6P1KWjdnB4)
 

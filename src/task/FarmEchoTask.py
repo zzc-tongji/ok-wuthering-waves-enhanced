@@ -77,7 +77,7 @@ class FarmEchoTask(WWOneTimeTask, BaseCombatTask):
                                                     'Boss Challenge': ['Which Boss Challenge to Teleport',
                                                                        'Boss Level'],
                                                 }}
-        self.config_type['Boss Level'] = {'type': "drop_down", 'options': self.boss_level}
+        self.config_type['Boss Level'] = {'type': "drop_down", 'options': ['50', '60', '70', '80', '90'], }
         self.config_type['Echo Pickup Method'] = {'type': "drop_down", 'options': self.find_echo_method}
         self.config_type['Boss'] = {'type': "drop_down", 'options': self.boss_list}
         self.combat_end_condition = self.find_echos
