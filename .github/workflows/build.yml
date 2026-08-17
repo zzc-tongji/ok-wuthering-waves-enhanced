@@ -50,14 +50,11 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
-          cache-dependency-path: |
-            requirements.txt
-            requirements-dev.txt
+          cache-dependency-path: pyproject.toml
 
       - name: Install dependencies
         run: |
-          python -m pip install -r requirements.txt
-          python -m pip install -r requirements-dev.txt
+          python -m pip install ".[dev]"
 
       - name: Prepare release requirements
         env:
@@ -134,14 +131,11 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
-          cache-dependency-path: |
-            requirements.txt
-            requirements-dev.txt
+          cache-dependency-path: pyproject.toml
 
       - name: Install dependencies
         run: |
-          python -m pip install -r requirements.txt
-          python -m pip install -r requirements-dev.txt
+          python -m pip install ".[dev]"
 
       - name: Prepare release requirements
         env:
@@ -165,6 +159,7 @@ jobs:
         with:
           repos: |
             https://cnb:${{ secrets.CNB_TOKEN }}@cnb.cool/ok-oldking/ok-wuthering-waves.git
+            https://cnb:${{ secrets.CNB_TOKEN }}@cnb.cool/ok-oldking/ok-ww-update2.git
             https://ok-oldking:${{ secrets.OK_GH }}@github.com/ok-oldking/ok-ww-update
           sync_list: 'deploy.txt'
           tag: ${{ github.ref_name }}
@@ -172,10 +167,11 @@ jobs:
           show_author: true
 
   package:
-    name: 3 · Build and sign
+    name: 3 · Build and optionally sign
     needs: synchronize
-    if: needs.synchronize.outputs.is_release == 'true'
     runs-on: windows-latest
+    env:
+      SIGN_BUILD: ${{ needs.synchronize.outputs.is_release }}
 
     steps:
       - name: Configure runner
@@ -200,14 +196,11 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
-          cache-dependency-path: |
-            requirements.txt
-            requirements-dev.txt
+          cache-dependency-path: pyproject.toml
 
       - name: Install dependencies
         run: |
-          python -m pip install -r requirements.txt
-          python -m pip install -r requirements-dev.txt
+          python -m pip install ".[dev]"
 
       - name: Prepare release requirements
         env:
@@ -392,7 +385,6 @@ jobs:
   publish:
     name: 4 · Publish
     needs: [ synchronize, package ]
-    if: needs.synchronize.outputs.is_release == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -419,11 +411,11 @@ jobs:
               * [百度网盘](https://pan.baidu.com/s/102Mh1djq2B1T-cIJhct9Gg?pwd=okww) 免费下载
               * [夸克网盘](https://pan.quark.cn/s/418018ddf7a0) 免费下载
           draft: false
-          prerelease: false
+          prerelease: ${{ needs.synchronize.outputs.is_release != 'true' }}
           files: pyappify_dist/*
 
       - name: Trigger distribution workflows
-        if: env.SIGN_BUILD == 'true'
+        if: needs.synchronize.outputs.is_release == 'true'
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

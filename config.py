@@ -2,12 +2,7 @@ import os
 import re
 from pathlib import Path
 
-# WA: set empty PATH to resolve qfluentwidgets/PySide6 access os.environ['PATH'] issue
-if 'PATH' not in os.environ:
-    os.environ['PATH'] = ""
-from qfluentwidgets import FluentIcon
-
-from ok import Box, ConfigOption
+from ok import Box, ConfigOption, Icon
 from src.task.process_feature import process_feature
 
 version = "dev"
@@ -139,12 +134,12 @@ key_config_option = ConfigOption('Game Hotkey', {
     'Bag Key': 'b',
 }, description='In Game Hotkey for Skills', config_description={
     'Bag Key': 'In-game hotkey used to open the Bag.',
-}, show_at_tab=True, icon=FluentIcon.GAME)
+}, show_at_tab=True, icon=Icon.GAME)
 
 char_config_option = ConfigOption('Character Config', {
     'Iuno C6': False,
     'Chisa DPS': False,
-}, description='Character Config', show_at_tab=True, icon=FluentIcon.PEOPLE)
+}, description='Character Config', show_at_tab=True, icon=Icon.PEOPLE)
 
 monthly_card_config_option = ConfigOption('Monthly Card Config', {
     'Check Monthly Card': True,
@@ -157,7 +152,9 @@ monthly_card_config_option = ConfigOption('Monthly Card Config', {
 config = {
     'debug': False,  # Optional, default: False
     'custom_tasks': True,
-    'use_gui': True,
+    "gui": {
+        "type": "qt",
+    },
     'config_folder': 'configs',
     'blur_area': blur_area,
     'gui_icon': 'icons/icon.png',

@@ -1,6 +1,7 @@
 name: "ok-ww-e"
 uac: true
 icon: "icons/icon.png"
+website: "http://ok-script.com/ok-ww"
 
 profiles:
   - name: "Global"
@@ -10,4 +11,5 @@ profiles:
     requires_python: "3.12"
     requirements: "requirements.txt"
     use_pythonw: true
+    pip_args: "--no-deps"
     show_add_defender: true
