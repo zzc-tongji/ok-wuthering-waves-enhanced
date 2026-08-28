@@ -6,6 +6,7 @@ from qfluentwidgets import FluentIcon
 
 from ok import Logger, TaskDisabledException
 from src.task.BaseWWTask import number_re
+from src.task.FarmEchoTask import FarmEchoTask
 from src.task.FarmEchoTask2 import FarmEchoTask2
 from src.task.ForgeryTask2 import ForgeryTask2
 from src.task.GardenTask import GardenTask
@@ -21,7 +22,8 @@ logger = Logger.get_logger(__name__)
 CHECK_WEEKLY_GARDEN = 'Check Weekly Garden'
 AUTO_FARM_NIGHTMARE_NEST = 'Auto Farm all Nightmare Nest'
 MERGE_ECHO_IF_DISCARDED_OVER_1000 = 'Merge Echo If discarded > 1000'
-TELEPORT_AND_FARM_4C_ECHO = 'Teleport and Farm 4C Echo, Support Weekly-Limited Advanced Skill Material'
+TELEPORT_AND_FARM_4C_ECHO = 'Teleport and Farm 4C Echo'
+ADVANCED_SKILL_MATERIAL = '4C Echo and Advanced Skill Material'
 ADDITIONAL_TASKS = 'Additional Tasks to Run After Daily Task'
 
 
@@ -52,7 +54,7 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
             'Material Selection': 'Resonator EXP / Weapon EXP / Shell Credit',
             'Simulation Challenge Count': 'farm Simulation Challenge N time(s), 40 stamina per time, set a large number to use all stamina',
             'Farm Nightmare Nest for Daily Echo': 'Farm 1 Echo from Nightmare Nest to complete Daily Task when needed.',
-            ADDITIONAL_TASKS: 'Select optional tasks. (1) Nightmare Nest: runs before stamina farming to help complete the daily task (2) Farm 4C Echo: runs before stamina farming if "advanced skill material mode" enabled, otherwise run afterward (3) other tasks: run afterward.',
+            ADDITIONAL_TASKS: 'Select optional tasks. (1) Nightmare Nest: runs before stamina farming to help complete the daily task (2) 4C Echo and Advanced Skill Material: runs before stamina farming (3) other tasks: run afterward.',
             'Task Retry': 'retry time(s) for each task',
             'Exit with Error': 'exit game and app with exception raised when option [Exit After Task] checked'
         }
@@ -85,6 +87,7 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
                     AUTO_FARM_NIGHTMARE_NEST,
                     MERGE_ECHO_IF_DISCARDED_OVER_1000,
                     TELEPORT_AND_FARM_4C_ECHO,
+                    ADVANCED_SKILL_MATERIAL,
                 ],
             },
         }
@@ -132,8 +135,8 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
             else:
                 self.log_info('NO NEED to farm nightmare nest(s), skipped')
             #
-            if TELEPORT_AND_FARM_4C_ECHO in additional_tasks:
-                current_task = "farm_4c_with_weekly_material"
+            if ADVANCED_SKILL_MATERIAL in additional_tasks:
+                current_task = "advanced_skill_material"
                 self.info_set('current task', current_task)
                 self.ensure_main()
                 for i in range(1, self.config.get('Task Retry') + 1):
@@ -143,11 +146,11 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
                         self.sleep(1)
                         break
                     except Exception as e:
-                        self.log_error(f'farm 4c with weekly material: attempt "{i}" failed\n{''.join(traceback.format_exception(e))}')
-                        self.screenshot(f'{datetime.now().strftime("%Y%m%d")}_DailyTask2_WeeklyGarden_Attempt_{i}')
+                        self.log_error(f'advanced skill material: attempt "{i}" failed\n{''.join(traceback.format_exception(e))}')
+                        self.screenshot(f'{datetime.now().strftime("%Y%m%d")}_DailyTask2_AdvancedSkillMaterial_Attempt_{i}')
                         self.ensure_main()
                         if (i >= self.config.get('Task Retry')):
-                            self.log_error("未能完成 幻梦游园（周度游历），需要手动登陆游戏处理。", notify=True)
+                            self.log_error("未能完成 4C声骸和高级技能材料，需要手动登陆游戏处理。", notify=True)
             #
             def tacet():
                 nonlocal current_task
@@ -276,6 +279,23 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
                         if (i >= self.config.get('Task Retry')):
                             self.log_error("未能完成 弃置声骸融合，需要手动登陆游戏处理。", notify=True)
             #
+            if TELEPORT_AND_FARM_4C_ECHO in additional_tasks:
+                current_task = "teleport_and_farm_4c_echo"
+                self.info_set('current task', current_task)
+                self.ensure_main()
+                for i in range(1, self.config.get('Task Retry') + 1):
+                    try:
+                        self.ensure_main()
+                        self.run_task_by_class(FarmEchoTask)
+                        self.sleep(1)
+                        break
+                    except Exception as e:
+                        self.log_error(f'teleport and farm 4c echo: attempt "{i}" failed\n{''.join(traceback.format_exception(e))}')
+                        self.screenshot(f'{datetime.now().strftime("%Y%m%d")}_DailyTask2_TeleportAndFarm4cEcho_Attempt_{i}')
+                        self.ensure_main()
+                        if (i >= self.config.get('Task Retry')):
+                            self.log_error("未能完成 传送并刷取4C声骸，需要手动登陆游戏处理。", notify=True)
+            #
         except Exception as e:
             self.log_error(f'每日任务错误 | {current_task} | {str(e)}\n{''.join(traceback.format_exception(e))}')
             self.screenshot(f'{datetime.now().strftime("%Y%m%d")}_DailyTask2_Error')
@@ -285,8 +305,16 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
 
     def validate_additional_tasks(self):
         additional_tasks = self.config.get(ADDITIONAL_TASKS) or []
-        if TELEPORT_AND_FARM_4C_ECHO in additional_tasks:
+        if ADVANCED_SKILL_MATERIAL in additional_tasks:
             farm_echo_task = self.get_task_by_class(FarmEchoTask2)
+            if farm_echo_task.config.get('Teleport to Boss', 'No') == 'No':
+                raise Exception(
+                    self.tr(
+                        '4C Echo and Advanced Skill Material requires "Teleport to Boss" to be enabled in 4C Echo and Advanced Skill Material Task.'
+                    )
+                )
+        if TELEPORT_AND_FARM_4C_ECHO in additional_tasks:
+            farm_echo_task = self.get_task_by_class(FarmEchoTask)
             if farm_echo_task.config.get('Teleport to Boss', 'No') == 'No':
                 raise Exception(
                     self.tr(

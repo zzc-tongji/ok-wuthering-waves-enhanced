@@ -18,7 +18,7 @@ class FarmEchoTask2(WWOneTimeTask, BaseCombatTask):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.description = "Click Start after Entering Dungeon or Teleporting to The Boss"
-        self.name = "⭐ Farm 4C Echo in Dungeon/World"
+        self.name = "⭐ 4C Echo and Skill Advanced Material"
         self.default_config.update({
             'Advanced Skill Material Mode': False,
             'Teleport to Boss': 'No',

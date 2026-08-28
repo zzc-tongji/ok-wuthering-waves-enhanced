@@ -618,11 +618,14 @@ msgstr "Supresión Tacet primero"
 msgid "Forgery First"
 msgstr "Forja primero"
 
-msgid "Select optional tasks. (1) Nightmare Nest: runs before stamina farming to help complete the daily task (2) Farm 4C Echo: runs before stamina farming if \"advanced skill material mode\" enabled, otherwise run afterward (3) other tasks: run afterward."
-msgstr "Selecciona tareas opcionales. (1) Nightmare Nest: se ejecuta antes de farmear stamina para ayudar a completar la tarea diaria (2) Farm 4C Echo: se ejecuta antes de farmear stamina si \"advanced skill material mode\" esta activado; si no, se ejecuta despues (3) otras tareas: se ejecutan despues."
+msgid "Select optional tasks. (1) Nightmare Nest: runs before stamina farming to help complete the daily task (2) 4C Echo and Advanced Skill Material: runs before stamina farming (3) other tasks: run afterward."
+msgstr "Selecciona tareas opcionales. (1) Nightmare Nest: se ejecuta antes de farmear stamina para ayudar a completar la tarea diaria (2) Eco 4C y material de habilidad avanzado: se ejecuta antes de farmear stamina (3) otras tareas: se ejecutan despues."
 
-msgid "Teleport and Farm 4C Echo, Support Weekly-Limited Advanced Skill Material"
-msgstr "Teletransportar y farmear Eco 4C, compatible con material de habilidad avanzado con limite semanal"
+msgid "4C Echo and Advanced Skill Material"
+msgstr "Eco 4C y material de habilidad avanzado"
+
+msgid "4C Echo and Advanced Skill Material requires \"Teleport to Boss\" to be enabled in 4C Echo and Advanced Skill Material Task."
+msgstr "Eco 4C y material de habilidad avanzado requiere activar \"Teleport to Boss\" en la tarea Eco 4C y material de habilidad avanzado."
 
 msgid "Task Retry"
 msgstr "Reintentos de tarea"
@@ -636,8 +639,8 @@ msgstr "Salir al producirse un error"
 msgid "exit game and app with exception raised when option [Exit After Task] checked"
 msgstr "salir del juego y de la app con una excepción cuando la opción [Exit After Task] está marcada"
 
-msgid "⭐ Farm 4C Echo in Dungeon/World"
-msgstr "⭐ Farmear Eco 4C en mazmorra/mundo"
+msgid "⭐ 4C Echo and Skill Advanced Material"
+msgstr "⭐ Eco 4C y material de habilidad avanzado"
 
 msgid "Advanced Skill Material Mode"
 msgstr "Modo de material de habilidad avanzado"

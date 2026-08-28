@@ -576,11 +576,14 @@ msgstr "無音区を先に実行"
 msgid "Forgery First"
 msgstr "凝素領域を先に実行"
 
-msgid "Select optional tasks. (1) Nightmare Nest: runs before stamina farming to help complete the daily task (2) Farm 4C Echo: runs before stamina farming if \"advanced skill material mode\" enabled, otherwise run afterward (3) other tasks: run afterward."
-msgstr "任意タスクを選択します。(1) Nightmare Nest: 日課完了を補助するためスタミナ周回前に実行 (2) Farm 4C Echo: \"advanced skill material mode\" が有効な場合はスタミナ周回前に実行し、それ以外は後で実行 (3) その他のタスク: 後で実行します。"
+msgid "Select optional tasks. (1) Nightmare Nest: runs before stamina farming to help complete the daily task (2) 4C Echo and Advanced Skill Material: runs before stamina farming (3) other tasks: run afterward."
+msgstr "任意タスクを選択します。(1) Nightmare Nest: 日課完了を補助するためスタミナ周回前に実行 (2) 4C音骸と上級スキル素材: スタミナ周回前に実行 (3) その他のタスク: 後で実行します。"
 
-msgid "Teleport and Farm 4C Echo, Support Weekly-Limited Advanced Skill Material"
-msgstr "テレポートして4C音骸を周回、週制限付き上級スキル素材に対応"
+msgid "4C Echo and Advanced Skill Material"
+msgstr "4C音骸と上級スキル素材"
+
+msgid "4C Echo and Advanced Skill Material requires \"Teleport to Boss\" to be enabled in 4C Echo and Advanced Skill Material Task."
+msgstr "「4C音骸と上級スキル素材」を実行するには、4C音骸と上級スキル素材タスクで「Teleport to Boss」を有効にしてください。"
 
 msgid "Task Retry"
 msgstr "タスクリトライ"
@@ -594,8 +597,8 @@ msgstr "エラー時に終了"
 msgid "exit game and app with exception raised when option [Exit After Task] checked"
 msgstr "[Exit After Task] が選択されている場合、例外発生時にゲームとアプリを終了します"
 
-msgid "⭐ Farm 4C Echo in Dungeon/World"
-msgstr "⭐ ダンジョン/フィールドでコスト4音骸を周回"
+msgid "⭐ 4C Echo and Skill Advanced Material"
+msgstr "⭐ 4C音骸と上級スキル素材"
 
 msgid "Advanced Skill Material Mode"
 msgstr "上級スキル素材モード"

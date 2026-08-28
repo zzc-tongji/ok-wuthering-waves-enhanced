@@ -574,11 +574,14 @@ msgstr "无音区"
 msgid "Forgery First"
 msgstr "凝素领域"
 
-msgid "Select optional tasks. (1) Nightmare Nest: runs before stamina farming to help complete the daily task (2) Farm 4C Echo: runs before stamina farming if \"advanced skill material mode\" enabled, otherwise run afterward (3) other tasks: run afterward."
-msgstr "选择可选任务。(1) 梦魇巢穴：会在消耗体力前运行，以协助完成每日任务 (2) 刷取4C声骸：如果开启 高级技能材料模式，那么将在消耗体力前运行，否则将在之后运行 (3) 其他任务：将在之后运行。"
+msgid "Select optional tasks. (1) Nightmare Nest: runs before stamina farming to help complete the daily task (2) 4C Echo and Advanced Skill Material: runs before stamina farming (3) other tasks: run afterward."
+msgstr "选择可选任务。(1) 梦魇巢穴：会在消耗体力前运行，以协助完成每日任务 (2) 4C声骸和高级技能材料：会在消耗体力前运行 (3) 其他任务：将在之后运行。"
 
-msgid "Teleport and Farm 4C Echo, Support Weekly-Limited Advanced Skill Material"
-msgstr "传送并刷取4C声骸，支持（周本）高级技能材料"
+msgid "4C Echo and Advanced Skill Material"
+msgstr "4C声骸和高级技能材料"
+
+msgid "4C Echo and Advanced Skill Material requires \"Teleport to Boss\" to be enabled in 4C Echo and Advanced Skill Material Task."
+msgstr "选择“4C声骸和高级技能材料”时，必须在 4C声骸和高级技能材料 任务中启用“传送至首领”。"
 
 msgid "Task Retry"
 msgstr "任务重试"
@@ -592,8 +595,8 @@ msgstr "报错后退出"
 msgid "exit game and app with exception raised when option [Exit After Task] checked"
 msgstr "勾选这个选项：如果「完成后退出」被选定，那么抛出异常也会退出游戏和App。"
 
-msgid "⭐ Farm 4C Echo in Dungeon/World"
-msgstr "⭐ 副本/大世界刷4C声骸"
+msgid "⭐ 4C Echo and Skill Advanced Material"
+msgstr "⭐ 4C声骸和高级技能材料"
 
 msgid "Advanced Skill Material Mode"
 msgstr "高级技能材料模式"
