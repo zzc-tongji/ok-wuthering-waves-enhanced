@@ -162,7 +162,7 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
                         self.log_error(f'farm tacet: attempt "{i}" failed\n{''.join(traceback.format_exception(e))}')
                         self.screenshot(f'{datetime.now().strftime("%Y%m%d")}_DailyTask2_Tacet_Attempt_{i}')
                         if (i >= self.config.get('Task Retry')):
-                            raise e
+                            self.log_error("未能完成 无音区，需要手动登陆游戏处理。", notify=True)
             def forgery():
                 nonlocal current_task
                 current_task = 'farm_forgery'
@@ -176,7 +176,7 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
                         self.log_error(f'farm forgery: attempt "{i}" failed\n{''.join(traceback.format_exception(e))}')
                         self.screenshot(f'{datetime.now().strftime("%Y%m%d")}_DailyTask2_Forgery_Attempt_{i}')
                         if (i >= self.config.get('Task Retry')):
-                            raise e
+                            self.log_error("未能完成 凝素领域，需要手动登陆游戏处理。", notify=True)
             def simulation():
                 nonlocal current_task
                 current_task = 'farm_simulation'
@@ -190,7 +190,7 @@ class DailyTask2(WWOneTimeTask, BaseCombatTask):
                         self.log_error(f'farm simulation: attempt "{i}" failed\n{''.join(traceback.format_exception(e))}')
                         self.screenshot(f'{datetime.now().strftime("%Y%m%d")}_DailyTask2_Simulation_Attempt_{i}')
                         if (i >= self.config.get('Task Retry')):
-                            raise e
+                            self.log_error("未能完成 模拟领域，需要手动登陆游戏处理。", notify=True)
             if self.config.get('Run Tacet or Forgery First') == 'Forgery First':
                 forgery(); tacet()
             else:
